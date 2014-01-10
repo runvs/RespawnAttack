@@ -19,7 +19,7 @@ namespace JamTemplate
 
         static void Main(string[] args)
         {
-            var applicationWindow = new RenderWindow(new VideoMode(800, 600, 32), "$WindowTitle$");
+            var applicationWindow = new RenderWindow(new VideoMode(800, 600, 32), "Respawn Attack");
 
             applicationWindow.SetFramerateLimit(60);
             applicationWindow.SetVerticalSyncEnabled(true);
@@ -27,8 +27,6 @@ namespace JamTemplate
             applicationWindow.Closed += new EventHandler(OnClose);
 
             Game myGame = new Game();
-
-
 
             int startTime = Environment.TickCount;
             int endTime = startTime;
@@ -45,6 +43,13 @@ namespace JamTemplate
                 applicationWindow.DispatchEvents();
 
                 myGame.GetInput();
+                if (myGame.CanBeQuit)
+                {
+                    if (Keyboard.IsKeyPressed(Keyboard.Key.Escape))
+                    {
+                        applicationWindow.Close();
+                    }
+                }
 
                 myGame.Update(time);
 

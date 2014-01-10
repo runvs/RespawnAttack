@@ -29,6 +29,7 @@ namespace JamTemplate
             SmartText._font = new Font("../GFX/font.ttf");
             SmartText._lineLengthInChars = 18;
             SmartText._lineSpread = 1.2f;
+            CanBeQuit = true;
         }
 
         public void GetInput()
@@ -171,5 +172,7 @@ namespace JamTemplate
 
         #endregion Subclasses/Enums
 
+
+        public bool CanBeQuit { get; private set; }
     }
 }
