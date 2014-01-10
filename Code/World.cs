@@ -12,6 +12,8 @@ namespace JamTemplate
 
         private System.Collections.Generic.List<Tile> _tileList;
         private System.Collections.Generic.List<Shot> _shotList;
+        private System.Collections.Generic.List<Bomb> _bombList;
+
         public Player _player;
 
         private Enemy _enemy;
@@ -56,9 +58,22 @@ namespace JamTemplate
                 }
 
             }
-
             _shotList = newShotList;
 
+            System.Collections.Generic.List<Bomb> newBombList = new System.Collections.Generic.List<Bomb>();
+            foreach (var b in _bombList)
+            {
+                b.Update(deltaT);
+                if (b.Position.Y >= 550 - b._sprite.Sprite.GetGlobalBounds().Height)
+                {
+                    b.IsAlive = false;
+                }
+                if (b.IsAlive)
+                {
+                    newBombList.Add(b);
+                }
+            }
+            _bombList = newBombList;
 
             _enemy.Update(deltaT);
 
@@ -88,6 +103,10 @@ namespace JamTemplate
             {
                 s.Draw(rw);
             }
+            foreach (var b in _bombList)
+            {
+                b.Draw(rw);
+            }
 
             _enemy.Draw(rw);
 
@@ -98,6 +117,7 @@ namespace JamTemplate
         private void InitGame()
         {
             _shotList = new System.Collections.Generic.List<Shot>();
+            _bombList = new System.Collections.Generic.List<Bomb>();
             _tileList = new System.Collections.Generic.List<Tile>();
             CreateWorld();
 
@@ -125,12 +145,20 @@ namespace JamTemplate
             return _tileList;
         }
 
-        #endregion Methods
-
 
         internal void EnemyKilled()
         {
             _player.AddKill();
         }
+
+        internal void AddBomb(Bomb newBomb)
+        {
+            _bombList.Add(newBomb);
+
+        }
+
+        #endregion Methods
+
+
     }
 }

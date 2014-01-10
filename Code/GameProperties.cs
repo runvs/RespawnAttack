@@ -29,7 +29,7 @@ namespace JamTemplate
 
         public static float VelocityDampingFactor { get {return 0.85f;}  }
         public static float PlayerAcceleration { get { return 22.0f; } }
-        public static float GravityFactor { get { return 45.0f; } }
+        public static float GravityFactor { get { return 5.0f; } }
 
         public static Vector2f MousePosition { get; set; }
 
@@ -40,8 +40,10 @@ namespace JamTemplate
 
         public static float EnemyBombRange { get { return 25.0f; } }
 
-        public static float EnemyAcceleration { get { return 12.0f; } }
+        public static float EnemyAcceleration { get { return 13.0f; } }
 
         public static int PlayerDamage { get { return 10 + RandomGenerator.Random.Next(1, 6); } }
+
+        public static float EnemyBombTimer { get { return 4.0f; } }
     }
 }

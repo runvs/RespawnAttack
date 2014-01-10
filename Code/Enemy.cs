@@ -20,6 +20,9 @@ namespace JamTemplate
 
         public int Health {get; private set;}
         public int HealthMax {get; private set;}
+
+        private float _bombTimer;
+        private bool _playerIsInBombRange;
         
 
 
@@ -30,6 +33,7 @@ namespace JamTemplate
             Position = position;
             IsDiyin = false;
             IsDead = false;
+            _bombTimer = 0.0f;
             
             try
             {
@@ -52,7 +56,7 @@ namespace JamTemplate
             if (IsDiyin)
             {
                 _dyingTimer -= deltaT;
-                Velocity = new Vector2f(Velocity.X, Velocity.Y + 9.0f);
+                Velocity = new Vector2f(Velocity.X, Velocity.Y + GameProperties.GravityFactor);
                 if (_dyingTimer <= 0.0f)
                 {
                     IsDead = true;
@@ -61,16 +65,38 @@ namespace JamTemplate
             else
             {
                 DoEnemyMovement(deltaT);
+
+                if (_bombTimer >= 0)
+                {
+                    _bombTimer -= deltaT;
+                }
+                else
+                {
+                    if (_playerIsInBombRange)
+                    {
+                        DropBomb();
+                    }
+                }
+
             }
 
             Position += deltaT * Velocity;
             _sprite.Update(deltaT);
         }
 
+        private void DropBomb()
+        {
+            _bombTimer += GameProperties.EnemyBombTimer;
+
+            Bomb newBomb = new Bomb(_world, new Vector2f(Position.X + _sprite.Sprite.GetLocalBounds().Width / 2.0f, Position.Y + _sprite.Sprite.GetLocalBounds().Width));
+            _world.AddBomb(newBomb);
+        }
+
         private void DoEnemyMovement(float deltaT)
         {
             float playerPosX = _world._player.Position.X - 25;  // the offset is for the fact that the enemy is larger than the pklayer but must be central over him
             float enemyPosX = Position.X;
+            _playerIsInBombRange = false;
             if (playerPosX > enemyPosX + GameProperties.EnemyBombRange)
             {
                 MoveRight();
@@ -78,6 +104,10 @@ namespace JamTemplate
             else if (playerPosX < enemyPosX - GameProperties.EnemyBombRange)
             {
                 MoveLeft();
+            }
+            else
+            {
+                _playerIsInBombRange = true;
             }
 
             //Velocity = new Vector2f(Velocity.X, )
