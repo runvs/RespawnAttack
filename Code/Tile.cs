@@ -17,7 +17,7 @@ namespace JamTemplate
             try
             {
                 _sprite = new SmartSprite("../GFX/tile.png");
-                _sprite.Position = new Vector2f((float)(position.X * GameProperties.TileSizeInPixels), (float)(position.Y * GameProperties.TileSizeInPixels));
+                
             }
             catch (Exception e)
             {
@@ -29,6 +29,7 @@ namespace JamTemplate
 
         public void Update (float deltaT)
         {
+            _sprite.Position = new Vector2f((float)(TilePosition.X * GameProperties.TileSizeInPixels), (float)(TilePosition.Y * GameProperties.TileSizeInPixels));
             _sprite.Update(deltaT);
         }
 

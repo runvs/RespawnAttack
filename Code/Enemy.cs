@@ -31,7 +31,7 @@ namespace JamTemplate
             Health = HealthMax = 100;
             _world = world;
             Position = position;
-            IsDiyin = false;
+            IsDying = false;
             IsDead = false;
             _bombTimer = 0.0f;
             
@@ -53,7 +53,7 @@ namespace JamTemplate
 
         public void Update (float deltaT)
         {
-            if (IsDiyin)
+            if (IsDying)
             {
                 _dyingTimer -= deltaT;
                 Velocity = new Vector2f(Velocity.X, Velocity.Y + GameProperties.GravityFactor);
@@ -128,7 +128,7 @@ namespace JamTemplate
 
         public void TakeDamage ()
         {
-            if (!IsDiyin && !IsDead)
+            if (!IsDying && !IsDead)
             {
                 _sprite.Flash(GameProperties.Color9, 0.2f);
                 _sprite.Shake(0.2f, 0.015f, 2.5f);
@@ -142,11 +142,11 @@ namespace JamTemplate
 
         private void CheckIfDead()
         {
-            if (!IsDiyin && !IsDead)
+            if (!IsDying && !IsDead)
             {
                 if (Health <= 0)
                 {
-                    IsDiyin = true;
+                    IsDying = true;
                     _dyingTimer += 3.5f;
                     _world.EnemyKilled();
                 }
@@ -156,6 +156,6 @@ namespace JamTemplate
 
         public bool IsDead { get; set; }
 
-        public bool IsDiyin { get; set; }
+        public bool IsDying { get; set; }
     }
 }

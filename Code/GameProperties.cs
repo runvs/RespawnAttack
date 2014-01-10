@@ -28,7 +28,7 @@ namespace JamTemplate
         public static float TileSizeInPixels { get { return 50; } }
 
         public static float VelocityDampingFactor { get {return 0.85f;}  }
-        public static float PlayerAcceleration { get { return 22.0f; } }
+        public static float PlayerAcceleration { get { return 27.0f; } }
         public static float GravityFactor { get { return 5.0f; } }
 
         public static Vector2f MousePosition { get; set; }
@@ -40,10 +40,16 @@ namespace JamTemplate
 
         public static float EnemyBombRange { get { return 25.0f; } }
 
-        public static float EnemyAcceleration { get { return 13.0f; } }
+        public static float EnemyAcceleration { get { return 16.0f; } }
 
         public static int PlayerDamage { get { return 10 + RandomGenerator.Random.Next(1, 6); } }
 
-        public static float EnemyBombTimer { get { return 4.0f; } }
+        public static float EnemyBombTimer { get { return 2.5f; } }
+
+        public static float ExplosionEnemyRange { get { return 35.0f; } }
+        public static float ExplosionPlayerRange { get { return 7.0f; } }
+
+        public static float ExplosionEnemyTotalTime { get { return 1.0f; } }
+        public static float ExplosionPlayerTotalTime { get { return 0.50f; } }
     }
 }

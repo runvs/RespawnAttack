@@ -14,7 +14,7 @@ namespace JamTemplate
 
         public int playerNumber;
         public string PlayerName { get; private set; }
-        private SmartSprite _sprite;
+        public SmartSprite _sprite;
 
         Dictionary<Keyboard.Key, Action> _actionMap;
         private float movementTimer = 0.0f; // time between two successive movement commands
@@ -177,5 +177,13 @@ namespace JamTemplate
         }
 
         public float Points { get; set; }
+
+        internal void Die()
+        {
+            IsDead = true;
+            Console.WriteLine("You Die!");
+        }
+
+        public bool IsDead { get; private set; }
     }
 }

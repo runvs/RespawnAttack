@@ -13,6 +13,7 @@ namespace JamTemplate
         private System.Collections.Generic.List<Tile> _tileList;
         private System.Collections.Generic.List<Shot> _shotList;
         private System.Collections.Generic.List<Bomb> _bombList;
+        private System.Collections.Generic.List<Explosion> _explosionList;
 
         public Player _player;
 
@@ -42,14 +43,19 @@ namespace JamTemplate
 
 
             System.Collections.Generic.List<Shot> newShotList = new System.Collections.Generic.List<Shot>();
+
             foreach (var s in _shotList)
             {
                 s.Update(deltaT);
 
-                if (SFMLCollision.Collision.BoundingBoxTest(s.GetSprite(), _enemy.GetSprite()))
+                if (!_enemy.IsDying)
                 {
-                    s.IsAlive = false;
-                    _enemy.TakeDamage();
+                    if (SFMLCollision.Collision.BoundingBoxTest(s.GetSprite(), _enemy.GetSprite()))
+                    {
+                        _explosionList.Add(new Explosion(this, s.Position, GameProperties.ExplosionPlayerRange, GameProperties.ExplosionPlayerTotalTime));
+                        s.IsAlive = false;
+                        _enemy.TakeDamage();
+                    }
                 }
 
                 if (s.IsAlive)
@@ -67,6 +73,24 @@ namespace JamTemplate
                 if (b.Position.Y >= 550 - b._sprite.Sprite.GetGlobalBounds().Height)
                 {
                     b.IsAlive = false;
+                    Vector2f explosionPosition = new Vector2f(b.Position.X +b._sprite.Sprite.GetGlobalBounds().Width/2.0f, b.Position.Y + b._sprite.Sprite.GetGlobalBounds().Height/2.0f);
+                    Explosion expl = new Explosion(this, explosionPosition , GameProperties.ExplosionEnemyRange, GameProperties.ExplosionEnemyTotalTime);
+                    _explosionList.Add(expl);
+
+                    foreach (var t in _tileList)
+                    {
+
+                        float tilePositionX = t.TilePosition.X * GameProperties.TileSizeInPixels;
+                        float distanceTileToExplosion = Math.Abs(tilePositionX - explosionPosition.X);
+
+
+                        if (distanceTileToExplosion <= 150.0f)
+                        {
+                            t._sprite.Shake(0.5f, 0.025f, 6.0f * (1 - distanceTileToExplosion/150.0f));
+                        }
+                    }
+
+
                 }
                 if (b.IsAlive)
                 {
@@ -83,11 +107,42 @@ namespace JamTemplate
             }
 
             _player.Update(deltaT);
+
+            System.Collections.Generic.List<Explosion> newExplosionList = new System.Collections.Generic.List<Explosion>();
+            foreach (var e in _explosionList)
+            {
+                e.Update(deltaT);
+
+                if (e.IsAlive)
+                {
+                    newExplosionList.Add(e);
+                    CheckIfPlayerIsInExplosion(e);
+                }
+
+            }
+            _explosionList = newExplosionList;
+
+        }
+
+        private void CheckIfPlayerIsInExplosion(Explosion e)
+        {
+            if (e.Position.Y >= 450)
+            {
+                float explosionX = e.Position.X;
+                float playerX = _player.Position.X + _player._sprite.Sprite.GetGlobalBounds().Width / 2.0f;
+
+
+
+                if (Math.Abs(explosionX - playerX) <= GameProperties.ExplosionEnemyRange * e._explosionRadius)
+                {
+                    _player.Die();
+                }
+            }
         }
 
         private void RespawnEnemy()
         {
-            _enemy = new Enemy(this, new Vector2f(100, 100));
+            _enemy = new Enemy(this, new Vector2f(100 + JamUtilities.RandomGenerator.Random.Next(0,601), 100));
         }
 
         public void Draw(RenderWindow rw)
@@ -112,12 +167,18 @@ namespace JamTemplate
 
             _player.Draw(rw);
 
+            foreach (var e in _explosionList)
+            {
+                e.Draw(rw);
+            }
+
         }
 
         private void InitGame()
         {
             _shotList = new System.Collections.Generic.List<Shot>();
             _bombList = new System.Collections.Generic.List<Bomb>();
+            _explosionList = new System.Collections.Generic.List<Explosion>();
             _tileList = new System.Collections.Generic.List<Tile>();
             CreateWorld();
 
@@ -154,11 +215,9 @@ namespace JamTemplate
         internal void AddBomb(Bomb newBomb)
         {
             _bombList.Add(newBomb);
-
         }
 
         #endregion Methods
-
 
     }
 }
