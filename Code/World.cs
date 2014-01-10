@@ -1,6 +1,7 @@
 ﻿using SFML.Graphics;
 using System;
 using SFML.Window;
+using SFMLCollision;
 
 namespace JamTemplate
 {
@@ -10,7 +11,10 @@ namespace JamTemplate
         #region Fields
 
         private System.Collections.Generic.List<Tile> _tileList;
-        private Player _player;
+        private System.Collections.Generic.List<Shot> _shotList;
+        public Player _player;
+
+        private Enemy _enemy;
 
         #endregion Fields
 
@@ -28,19 +32,64 @@ namespace JamTemplate
 
         public void Update(float deltaT)
         {
+
             foreach (var t in _tileList)
             {
                 t.Update(deltaT);
             }
+
+
+            System.Collections.Generic.List<Shot> newShotList = new System.Collections.Generic.List<Shot>();
+            foreach (var s in _shotList)
+            {
+                s.Update(deltaT);
+
+                if (SFMLCollision.Collision.BoundingBoxTest(s.GetSprite(), _enemy.GetSprite()))
+                {
+                    s.IsAlive = false;
+                    _enemy.TakeDamage();
+                }
+
+                if (s.IsAlive)
+                {
+                    newShotList.Add(s);
+                }
+
+            }
+
+            _shotList = newShotList;
+
+
+            _enemy.Update(deltaT);
+
+            if (_enemy.IsDead)
+            {
+                RespawnEnemy();
+            }
+
             _player.Update(deltaT);
+        }
+
+        private void RespawnEnemy()
+        {
+            _enemy = new Enemy(this, new Vector2f(100, 100));
         }
 
         public void Draw(RenderWindow rw)
         {
+
+            rw.Clear(GameProperties.Color7);
+
             foreach (var t in _tileList)
             {
                 t.Draw(rw);
             }
+            foreach (var s in _shotList)
+            {
+                s.Draw(rw);
+            }
+
+            _enemy.Draw(rw);
 
             _player.Draw(rw);
 
@@ -48,11 +97,16 @@ namespace JamTemplate
 
         private void InitGame()
         {
+            _shotList = new System.Collections.Generic.List<Shot>();
             _tileList = new System.Collections.Generic.List<Tile>();
             CreateWorld();
 
             _player = new Player(this, 0);
-            
+        }
+
+        public void AddShot (Shot shot)
+        {
+            _shotList.Add(shot);
         }
 
         private void CreateWorld()
@@ -62,7 +116,10 @@ namespace JamTemplate
                 Tile tile = new Tile(new Vector2u(i, 11));
                 _tileList.Add(tile);
             }
+
+            RespawnEnemy();
         }
+
         public System.Collections.Generic.List<Tile> GetTileList ()
         {
             return _tileList;
@@ -70,5 +127,10 @@ namespace JamTemplate
 
         #endregion Methods
 
+
+        internal void EnemyKilled()
+        {
+            _player.AddKill();
+        }
     }
 }

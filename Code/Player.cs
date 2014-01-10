@@ -19,7 +19,9 @@ namespace JamTemplate
         Dictionary<Keyboard.Key, Action> _actionMap;
         private float movementTimer = 0.0f; // time between two successive movement commands
         private World _world;
-        private bool _noCollision;
+        
+        private float _shootTimer;
+        private float _scoreMultiplier;
 
         public Vector2f Position { get; private set; }
         public Vector2f Velocity { get; private set; }
@@ -35,11 +37,11 @@ namespace JamTemplate
             
             SetupActionMap();
 
-            Velocity = new Vector2f(0.0f, 100.0f);
-            Position = new Vector2f(0.0f, 0.0f);
+            Velocity = new Vector2f(0.0f, 0.0f);
+            Position = new Vector2f(0.0f, 500.0f);
 
-            
-
+            Points = 0;
+            _scoreMultiplier = 1.0f;
             try
             {
                 LoadGraphics();
@@ -70,50 +72,68 @@ namespace JamTemplate
             DoPlayerMovement(deltaT);
 			_sprite.Update(deltaT);
 
-            Console.WriteLine(Velocity);
+            if (_shootTimer >= 0.0f)
+            {
+                _shootTimer -= deltaT;
+            }
+            
+
+            //Console.WriteLine(Velocity);
         }
 
         private void DoPlayerMovement(float deltaT)
         {
-            if (_noCollision)
-            {
-                Velocity = new Vector2f(Velocity.X, Velocity.Y + GameProperties.GravityFactor);
-            }
+
             Velocity *= GameProperties.VelocityDampingFactor;
 
             Vector2f movementVector = deltaT * Velocity;
             Vector2f newPos = Position + movementVector;
 
-            _noCollision = true;
-            foreach (var t in _world.GetTileList())
-            {
-                if (Collision.BoundingBoxTest(_sprite.Sprite, t._sprite.Sprite))
-                {
-                    Console.WriteLine("Collision");
-                    Velocity = new Vector2f(Velocity.X, 0);
-                    newPos.Y -= movementVector.Y;
-                    _noCollision = false;
 
-                }
-            }
-
-            
             Position = newPos;
         }
 
         private void MoveRightAction ()
         {
-            Velocity = new Vector2f(Velocity.X + GameProperties.VelocityMovementAdd, Velocity.Y);
+            Velocity = new Vector2f(Velocity.X + GameProperties.PlayerAcceleration, Velocity.Y);
         }
         private void MoveLeftAction()
         {
-            Velocity = new Vector2f(Velocity.X - GameProperties.VelocityMovementAdd, Velocity.Y);
+            Velocity = new Vector2f(Velocity.X - GameProperties.PlayerAcceleration, Velocity.Y);
+        }
+
+        private void ShootAction()
+        {
+            if (_shootTimer <= 0.0f)
+            {
+                Shoot();
+            }
+        }
+
+        private void Shoot()
+        {
+            Vector2f shotDirection = GameProperties.MousePosition -  Position;
+            float shotLength = (float)(Math.Sqrt(shotDirection.X*shotDirection.X + shotDirection.Y*shotDirection.Y));
+            shotDirection/=shotLength;
+
+            Vector2f shotPosition = new Vector2f(Position.X + 25, Position.Y);
+
+            Shot newShot = new Shot(_world, shotPosition, shotDirection);
+            _world.AddShot(newShot);
+            _shootTimer += GameProperties.PlayerShootTime;
         }
 
         public void Draw(SFML.Graphics.RenderWindow rw)
         {
             _sprite.Position = Position;
             _sprite.Draw(rw);
+
+            DrawScore(rw);
+        }
+
+        private void DrawScore(RenderWindow rw)
+        {
+            SmartText.DrawText(Points.ToString(), TextAlignment.RIGHT, new Vector2f(750, 20), GameProperties.Color1, rw);
         }
 
         private void SetupActionMap()
@@ -125,6 +145,8 @@ namespace JamTemplate
 
             _actionMap.Add(Keyboard.Key.Right, MoveRightAction);
             _actionMap.Add(Keyboard.Key.D, MoveRightAction);
+
+            _actionMap.Add(Keyboard.Key.Space, ShootAction);
         }
 
         private void MapInputToActions()
@@ -147,5 +169,13 @@ namespace JamTemplate
 
         #endregion Methods
 
+
+        internal void AddKill()
+        {
+            Points += 100.0f * _scoreMultiplier;
+            _scoreMultiplier += 0.05f;
+        }
+
+        public float Points { get; set; }
     }
 }

@@ -51,6 +51,9 @@ namespace JamTemplate
                     }
                 }
 
+                Vector2i mousePos = Mouse.GetPosition(applicationWindow);
+                GameProperties.MousePosition = new Vector2f((float)(mousePos.X),(float)(mousePos.Y));
+
                 myGame.Update(time);
 
                 myGame.Draw(applicationWindow);
