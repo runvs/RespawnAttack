@@ -19,12 +19,15 @@ namespace JamTemplate
 
         private Enemy _enemy;
 
+        private Background _background;
+
         #endregion Fields
 
         #region Methods
 
         public World()
         {
+            _background = new Background();
             InitGame();
         }
 
@@ -35,6 +38,8 @@ namespace JamTemplate
 
         public void Update(float deltaT)
         {
+
+            _background.Update(deltaT);
 
             foreach (var t in _tileList)
             {
@@ -148,7 +153,8 @@ namespace JamTemplate
         public void Draw(RenderWindow rw)
         {
 
-            rw.Clear(GameProperties.Color7);
+            //rw.Clear(GameProperties.Color7);
+            _background.Draw(rw);
 
             foreach (var t in _tileList)
             {

@@ -42,7 +42,7 @@ namespace JamTemplate
 
         public static float EnemyAcceleration { get { return 16.0f; } }
 
-        public static int PlayerDamage { get { return 10 + RandomGenerator.Random.Next(1, 6); } }
+        public static int PlayerDamage { get { return 7 + RandomGenerator.Random.Next(1, 5); } }
 
         public static float EnemyBombTimer { get { return 2.5f; } }
 
@@ -51,5 +51,15 @@ namespace JamTemplate
 
         public static float ExplosionEnemyTotalTime { get { return 1.0f; } }
         public static float ExplosionPlayerTotalTime { get { return 0.50f; } }
+
+        public static int BackgroundNumberOfStars { get { return 125; } }
+
+        public static float BackgroundAlphaBaseFrequency { get { return 5.0f; } }
+
+        public static int BackgroundNumberOfClouds { get { return 20; } }
+
+        public static float BackgroundCloudRadius { get { return 50.0f; } }
+
+        public static float BackgroundCloudBaseFrequency { get { return 0.75f; } }
     }
 }
