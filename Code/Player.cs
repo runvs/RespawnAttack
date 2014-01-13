@@ -7,183 +7,183 @@ using SFMLCollision;
 
 namespace JamTemplate
 {
-    class Player
-    {
+	class Player
+	{
 
-        #region Fields
+		#region Fields
 
-        public int playerNumber;
-        public string PlayerName { get; private set; }
-        public SmartSprite _sprite;
+		public int playerNumber;
+		public string PlayerName { get; private set; }
+		public SmartSprite _sprite;
 
-        Dictionary<Keyboard.Key, Action> _actionMap;
-        private float movementTimer = 0.0f; // time between two successive movement commands
-        private World _world;
-        
-        private float _shootTimer;
-        private float _scoreMultiplier;
+		Dictionary<Keyboard.Key, Action> _actionMap;
+		private float movementTimer = 0.0f; // time between two successive movement commands
+		private World _world;
+		
+		private float _shootTimer;
 
-        public Vector2f Position { get; private set; }
-        public Vector2f Velocity { get; private set; }
+		private float _scoreMultiplier;
+		public int Points { get; set; }
 
-        #endregion Fields
+		public Vector2f Position { get; private set; }
+		public Vector2f Velocity { get; private set; }
 
-        #region Methods
+		
 
-        public Player(World world, int number)
-        {
-            _world = world;
-            playerNumber = number;
-            
-            SetupActionMap();
+		public bool IsDead { get; private set; }
 
-            Velocity = new Vector2f(0.0f, 0.0f);
-            Position = new Vector2f(0.0f, 500.0f);
+		#endregion Fields
 
-            Points = 0;
-            _scoreMultiplier = 1.0f;
-            try
-            {
-                LoadGraphics();
-            }
-            catch (SFML.LoadingFailedException e)
-            {
-                System.Console.Out.WriteLine("Error loading player Graphics.");
-                System.Console.Out.WriteLine(e.ToString());
-            }
-        }
+		#region Methods
 
-        private void SetPlayerNumberDependendProperties()
-        {
-            PlayerName = "Player" + playerNumber.ToString();
-        }
+		public Player(World world, int number)
+		{
+			_world = world;
+			playerNumber = number;
+			
+			SetupActionMap();
 
-        public void GetInput()
-        {
-            if (movementTimer <= 0.0f)
-            {
-                MapInputToActions();
-            }
-        }
+			Velocity = new Vector2f(0.0f, 0.0f);
+			Position = new Vector2f(0.0f, 500.0f);
+
+			Points = 0;
+			_scoreMultiplier = 1.0f;
+			try
+			{
+				LoadGraphics();
+			}
+			catch (SFML.LoadingFailedException e)
+			{
+				System.Console.Out.WriteLine("Error loading player Graphics.");
+				System.Console.Out.WriteLine(e.ToString());
+			}
+		}
+
+		private void SetPlayerNumberDependendProperties()
+		{
+			PlayerName = "Player" + playerNumber.ToString();
+		}
+
+		public void GetInput()
+		{
+			if (movementTimer <= 0.0f)
+			{
+				MapInputToActions();
+			}
+		}
 
 
-        public void Update(float deltaT)
-        {
-            DoPlayerMovement(deltaT);
+		public void Update(float deltaT)
+		{
+			DoPlayerMovement(deltaT);
 			_sprite.Update(deltaT);
 
-            if (_shootTimer >= 0.0f)
-            {
-                _shootTimer -= deltaT;
-            }
-            
+			if (_shootTimer >= 0.0f)
+			{
+				_shootTimer -= deltaT;
+			}
+		}
 
-            //Console.WriteLine(Velocity);
-        }
+		private void DoPlayerMovement(float deltaT)
+		{
 
-        private void DoPlayerMovement(float deltaT)
-        {
+			Velocity *= GameProperties.VelocityDampingFactor;
 
-            Velocity *= GameProperties.VelocityDampingFactor;
+			Vector2f movementVector = deltaT * Velocity;
+			Vector2f newPos = Position + movementVector;
 
-            Vector2f movementVector = deltaT * Velocity;
-            Vector2f newPos = Position + movementVector;
+			Position = newPos;
+		}
 
+		private void MoveRightAction ()
+		{
+			Velocity = new Vector2f(Velocity.X + GameProperties.PlayerAcceleration, Velocity.Y);
+		}
+		private void MoveLeftAction()
+		{
+			Velocity = new Vector2f(Velocity.X - GameProperties.PlayerAcceleration, Velocity.Y);
+		}
 
-            Position = newPos;
-        }
+		private void ShootAction()
+		{
+			if (_shootTimer <= 0.0f)
+			{
+				Shoot();
+			}
+		}
 
-        private void MoveRightAction ()
-        {
-            Velocity = new Vector2f(Velocity.X + GameProperties.PlayerAcceleration, Velocity.Y);
-        }
-        private void MoveLeftAction()
-        {
-            Velocity = new Vector2f(Velocity.X - GameProperties.PlayerAcceleration, Velocity.Y);
-        }
+		private void Shoot()
+		{
+			Vector2f shotDirection = GameProperties.MousePosition -  Position;
+			float shotLength = (float)(Math.Sqrt(shotDirection.X*shotDirection.X + shotDirection.Y*shotDirection.Y));
+			shotDirection/=shotLength;
 
-        private void ShootAction()
-        {
-            if (_shootTimer <= 0.0f)
-            {
-                Shoot();
-            }
-        }
+			Vector2f shotPosition = new Vector2f(Position.X + 25, Position.Y);
 
-        private void Shoot()
-        {
-            Vector2f shotDirection = GameProperties.MousePosition -  Position;
-            float shotLength = (float)(Math.Sqrt(shotDirection.X*shotDirection.X + shotDirection.Y*shotDirection.Y));
-            shotDirection/=shotLength;
+			Shot newShot = new Shot(_world, shotPosition, shotDirection);
+			_world.AddShot(newShot);
+			_shootTimer += GameProperties.PlayerShootTime;
+		}
 
-            Vector2f shotPosition = new Vector2f(Position.X + 25, Position.Y);
+		public void Draw(SFML.Graphics.RenderWindow rw)
+		{
+			_sprite.Position = Position;
+			_sprite.Draw(rw);
 
-            Shot newShot = new Shot(_world, shotPosition, shotDirection);
-            _world.AddShot(newShot);
-            _shootTimer += GameProperties.PlayerShootTime;
-        }
+			DrawScore(rw);
+		}
 
-        public void Draw(SFML.Graphics.RenderWindow rw)
-        {
-            _sprite.Position = Position;
-            _sprite.Draw(rw);
+		private void DrawScore(RenderWindow rw)
+		{
+			SmartText.DrawText(Points.ToString(), TextAlignment.RIGHT, new Vector2f(750, 20), GameProperties.Color1, rw);
+		}
 
-            DrawScore(rw);
-        }
+		private void SetupActionMap()
+		{
+			_actionMap = new Dictionary<Keyboard.Key, Action>();
+			// e.g. _actionMap.Add(Keyboard.Key.Escape, ResetActionMap);
+			_actionMap.Add(Keyboard.Key.Left, MoveLeftAction);
+			_actionMap.Add(Keyboard.Key.A, MoveLeftAction);
 
-        private void DrawScore(RenderWindow rw)
-        {
-            SmartText.DrawText(Points.ToString(), TextAlignment.RIGHT, new Vector2f(750, 20), GameProperties.Color1, rw);
-        }
+			_actionMap.Add(Keyboard.Key.Right, MoveRightAction);
+			_actionMap.Add(Keyboard.Key.D, MoveRightAction);
 
-        private void SetupActionMap()
-        {
-            _actionMap = new Dictionary<Keyboard.Key, Action>();
-            // e.g. _actionMap.Add(Keyboard.Key.Escape, ResetActionMap);
-            _actionMap.Add(Keyboard.Key.Left, MoveLeftAction);
-            _actionMap.Add(Keyboard.Key.A, MoveLeftAction);
+			_actionMap.Add(Keyboard.Key.Space, ShootAction);
+		}
 
-            _actionMap.Add(Keyboard.Key.Right, MoveRightAction);
-            _actionMap.Add(Keyboard.Key.D, MoveRightAction);
+		private void MapInputToActions()
+		{
+			foreach (var kvp in _actionMap)
+			{
+				if (Keyboard.IsKeyPressed(kvp.Key))
+				{
+					// Execute the saved callback
+					kvp.Value();
+				}
+			}
+		}
 
-            _actionMap.Add(Keyboard.Key.Space, ShootAction);
-        }
+		private void LoadGraphics()
+		{
 
-        private void MapInputToActions()
-        {
-            foreach (var kvp in _actionMap)
-            {
-                if (Keyboard.IsKeyPressed(kvp.Key))
-                {
-                    // Execute the saved callback
-                    kvp.Value();
-                }
-            }
-        }
-
-        private void LoadGraphics()
-        {
-
-            _sprite = new SmartSprite("../GFX/player.png");
-        }
-
-        #endregion Methods
+			_sprite = new SmartSprite("../GFX/player.png");
+		}
 
 
-        internal void AddKill()
-        {
-            Points += 100.0f * _scoreMultiplier;
-            _scoreMultiplier += 0.05f;
-        }
+		internal void AddKill()
+		{
+			Points += (int)(100.0f * _scoreMultiplier);
+			_scoreMultiplier += 0.05f;
+		}
 
-        public float Points { get; set; }
+		internal void Die()
+		{
+			IsDead = true;
+			Console.WriteLine("You Die!");
+		}
 
-        internal void Die()
-        {
-            IsDead = true;
-            Console.WriteLine("You Die!");
-        }
+		#endregion Methods
 
-        public bool IsDead { get; private set; }
-    }
+
+	}
 }

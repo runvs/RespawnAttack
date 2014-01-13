@@ -29,6 +29,9 @@ namespace JamTemplate
             SmartText._font = new Font("../GFX/font.ttf");
             SmartText._lineLengthInChars = 18;
             SmartText._lineSpread = 1.2f;
+            //ScreenEffects._fadeColor = GameProperties.Color1;
+            ScreenEffects.Init(new Vector2u(800,600));
+
             CanBeQuit = true;
         }
 

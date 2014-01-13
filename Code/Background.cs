@@ -100,6 +100,8 @@ namespace JamTemplate
         {
             rw.Clear(GameProperties.Color9);
 
+            ScreenEffects.DrawFadeUp(rw);
+
             int i = 0;
             foreach (var v in _starLayer)
             {
