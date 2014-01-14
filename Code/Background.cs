@@ -43,7 +43,7 @@ namespace JamTemplate
             _starLayerAlphaFrequency = new List<float>();
             for (int i = 0; i <= GameProperties.BackgroundNumberOfStars; i++)
             {
-                _starLayer.Add(JamUtilities.RandomGenerator.GetRandomVector2fSquare(800.0f));
+                _starLayer.Add(RandomGenerator.GetRandomVector2f(new Vector2f(-0, 800.0f), new Vector2f(0, 600)));
                 float alphaFrequency = (float)(JamUtilities.RandomGenerator.Random.NextDouble() + 0.5) * GameProperties.BackgroundAlphaBaseFrequency;
                 _starLayerAlphaFrequency.Add(alphaFrequency);
             }
@@ -53,7 +53,7 @@ namespace JamTemplate
             _cloudLayerIndividualMovementFrequencies = new List<Vector2f>();
             for (int i = 0; i <= GameProperties.BackgroundNumberOfClouds; i++)
             {
-                _cloudLayerPositions.Add(RandomGenerator.GetRandomVector2fSquare(600.0f));
+                _cloudLayerPositions.Add(RandomGenerator.GetRandomVector2f(new Vector2f(-50, 750.0f), new Vector2f(0,600)));
                 _cloudLayerScale.Add(RandomGenerator.GetRandomVector2f(new Vector2f(1.0f, 1.1f), new Vector2f(0.30f, 0.35f)));
 
                 _cloudLayerIndividualMovementFrequencies.Add(new Vector2f((float)((RandomGenerator.Random.NextDouble() + 0.5f) * GameProperties.BackgroundCloudBaseFrequency), (float)((RandomGenerator.Random.NextDouble() + 0.5f) * GameProperties.BackgroundCloudBaseFrequency)));
@@ -76,22 +76,18 @@ namespace JamTemplate
             for (int i = 0; i != _cloudLayerPositions.Count; i++ )
             {
                 Vector2f IndividualVelocity = new Vector2f(1.5f * (float)Math.Sin(_totalTimePassed * _cloudLayerIndividualMovementFrequencies[i].X), 2.5f * (float)Math.Sin(_totalTimePassed * _cloudLayerIndividualMovementFrequencies[i].Y));
-                _cloudLayerPositions[i] += deltaT * (_cloudMovementVector + IndividualVelocity);
-                if (_cloudLayerPositions[i].X >= 1200)
+                _cloudLayerPositions[i] += deltaT * (_cloudMovementVector + IndividualVelocity) * GameProperties.BackgroundCloudMovementSpeed;
+                if (_cloudLayerPositions[i].X >= 810)
                 {
-                    _cloudLayerPositions[i] = new Vector2f(-400, _cloudLayerPositions[i].Y);
-                }
-                if (_cloudLayerPositions[i].X <= -400)
-                {
-                    _cloudLayerPositions[i] = new Vector2f(1200, _cloudLayerPositions[i].Y);
+                    _cloudLayerPositions[i] = new Vector2f(- 2.0f* GameProperties.BackgroundCloudRadius, _cloudLayerPositions[i].Y);
                 }
                 if (_cloudLayerPositions[i].Y >= 1000)
                 {
-                    _cloudLayerPositions[i] = new Vector2f(_cloudLayerPositions[i].X, -400);
+                    _cloudLayerPositions[i] = new Vector2f(_cloudLayerPositions[i].X, -350);
                 }
                 if (_cloudLayerPositions[i].Y <= -400)
                 {
-                    _cloudLayerPositions[i] = new Vector2f(_cloudLayerPositions[i].X, 1000);
+                    _cloudLayerPositions[i] = new Vector2f(_cloudLayerPositions[i].X, 900);
                 }
             }
         }

@@ -52,14 +52,16 @@ namespace JamTemplate
         public static float ExplosionEnemyTotalTime { get { return 1.0f; } }
         public static float ExplosionPlayerTotalTime { get { return 0.50f; } }
 
-        public static int BackgroundNumberOfStars { get { return 125; } }
+        public static int BackgroundNumberOfStars { get { return 45; } }
 
         public static float BackgroundAlphaBaseFrequency { get { return 5.0f; } }
 
-        public static int BackgroundNumberOfClouds { get { return 20; } }
+        public static int BackgroundNumberOfClouds { get { return 10; } }
 
         public static float BackgroundCloudRadius { get { return 50.0f; } }
 
         public static float BackgroundCloudBaseFrequency { get { return 0.75f; } }
+
+        public static float BackgroundCloudMovementSpeed { get { return 1.05f; } }
     }
 }

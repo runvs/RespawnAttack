@@ -74,10 +74,6 @@ namespace JamTemplate
             {
                 ChangeGameState(State.Menu, 1.0f);
             }
-            else
-            {
-                ChangeGameState(State.Menu, 0.5f);
-            }
         }
 
         public void Update(float deltaT)
@@ -91,7 +87,11 @@ namespace JamTemplate
             {
                 _myWorld.Update(deltaT);
 
-                // TODO Game End Criteria
+                if (_myWorld._player.IsDeadFinal)
+                {
+                    _gameStats = _myWorld.GetStats();
+                    ChangeGameState(State.Score);
+                }
             }
 
         }

@@ -11,12 +11,13 @@ namespace JamTemplate
 
         #region Methods
 
-        public Score()
+        public Score(World world)
         {
         }
 
         public void Draw(RenderWindow rw)
         {
+
         }
 
         #endregion Methods

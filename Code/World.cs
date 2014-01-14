@@ -182,6 +182,8 @@ namespace JamTemplate
             }
             ScreenEffects.Draw(rw);
 
+            _player.DrawScore(rw);
+
         }
 
         private void InitGame()
@@ -234,5 +236,12 @@ namespace JamTemplate
 
         #endregion Methods
 
+
+        internal Score GetStats()
+        {
+            Score score = new Score(this);
+
+            return score;
+        }
     }
 }
