@@ -10,8 +10,9 @@ namespace JamTemplate
     class Explosion
     {
         private World _world;
+        public bool CanHitPlayer { get; private set; }
 
-        public Explosion(World world, Vector2f position, float explosionRange, float explosionTotalTime)
+        public Explosion(World world, Vector2f position, float explosionRange, float explosionTotalTime, bool canHitPlayer = true)
         {
             _world = world;
             _explostionTotalRange = explosionRange;
@@ -20,6 +21,7 @@ namespace JamTemplate
 
             _timeSinceExplosion = 0.0f;
             IsAlive = true;
+            CanHitPlayer = canHitPlayer;
 
             CreateCircleList();
 
@@ -64,7 +66,7 @@ namespace JamTemplate
 
         System.Collections.Generic.List<CircleShape> _listCircles;
         private float _timeSinceExplosion;
-        private float _explostionTotalRange;
+        public float _explostionTotalRange;
         private float _explosionTotlTime;
 
         public void Draw (RenderWindow rw)

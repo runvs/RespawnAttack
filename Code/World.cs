@@ -2,6 +2,7 @@
 using System;
 using SFML.Window;
 using SFMLCollision;
+using JamUtilities;
 
 namespace JamTemplate
 {
@@ -40,6 +41,7 @@ namespace JamTemplate
         {
 
             _background.Update(deltaT);
+            ScreenEffects.Update(deltaT);
 
             foreach (var t in _tileList)
             {
@@ -131,16 +133,17 @@ namespace JamTemplate
 
         private void CheckIfPlayerIsInExplosion(Explosion e)
         {
-            if (e.Position.Y >= 450)
+            if (e.CanHitPlayer)
             {
-                float explosionX = e.Position.X;
-                float playerX = _player.Position.X + _player._sprite.Sprite.GetGlobalBounds().Width / 2.0f;
-
-
-
-                if (Math.Abs(explosionX - playerX) <= GameProperties.ExplosionEnemyRange * e._explosionRadius)
+                if (e.Position.Y >= 450)
                 {
-                    _player.Die();
+                    float explosionX = e.Position.X;
+                    float playerX = _player.Position.X + _player._sprite.Sprite.GetGlobalBounds().Width / 2.0f;
+
+                    if (Math.Abs(explosionX - playerX) <= e._explostionTotalRange * e._explosionRadius)
+                    {
+                        _player.Die();
+                    }
                 }
             }
         }
@@ -177,6 +180,7 @@ namespace JamTemplate
             {
                 e.Draw(rw);
             }
+            ScreenEffects.Draw(rw);
 
         }
 
@@ -221,6 +225,11 @@ namespace JamTemplate
         internal void AddBomb(Bomb newBomb)
         {
             _bombList.Add(newBomb);
+        }
+
+        internal void AddExplosion(Explosion newExplosion)
+        {
+            _explosionList.Add(newExplosion);
         }
 
         #endregion Methods

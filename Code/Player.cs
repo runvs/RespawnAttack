@@ -31,6 +31,8 @@ namespace JamTemplate
 		
 
 		public bool IsDead { get; private set; }
+        public bool IsDeadFinal { get; private set; }
+        private uint _remainingLives;
 
 		#endregion Fields
 
@@ -40,6 +42,9 @@ namespace JamTemplate
 		{
 			_world = world;
 			playerNumber = number;
+            _remainingLives = 3;
+
+            IsDead = IsDeadFinal = false;
 			
 			SetupActionMap();
 
@@ -66,11 +71,30 @@ namespace JamTemplate
 
 		public void GetInput()
 		{
-			if (movementTimer <= 0.0f)
-			{
-				MapInputToActions();
-			}
+            if (!IsDead)
+            {
+                if (movementTimer <= 0.0f)
+                {
+                    MapInputToActions();
+                }
+            }
+            else
+            {
+                if (Mouse.IsButtonPressed(Mouse.Button.Left))
+                {
+                    RespawnPlayer();
+                }
+            }
 		}
+
+        private void RespawnPlayer()
+        {
+            IsDead = false;
+            _remainingLives--;
+            CheckFinalDead();
+            Position = new Vector2f(GameProperties.MousePosition.X, 500);
+            ScreenEffects.ScreenFlash(GameProperties.Color1, 0.5f);
+        }
 
 
 		public void Update(float deltaT)
@@ -127,9 +151,18 @@ namespace JamTemplate
 
 		public void Draw(SFML.Graphics.RenderWindow rw)
 		{
-			_sprite.Position = Position;
-			_sprite.Draw(rw);
+            if (!IsDead)
+            {
+                _sprite.Position = Position;
+                _sprite.Draw(rw);
+            }
+            else
+            {
+                Vector2f pos = GameProperties.MousePosition;
+                pos.Y = 150;
+                SmartText.DrawText("Click For Respawn", pos, rw);
 
+            }
 			DrawScore(rw);
 		}
 
@@ -179,8 +212,25 @@ namespace JamTemplate
 		internal void Die()
 		{
 			IsDead = true;
-			Console.WriteLine("You Die!");
+			//Console.WriteLine("You Die!");
+            //_remainingLives--;
+            
+
+            CheckFinalDead();
+
 		}
+
+        private void CheckFinalDead()
+        {
+            if (IsDead)
+            {
+                if (_remainingLives < 0)
+                {
+                    IsDeadFinal = true;
+                }
+
+            }
+        }
 
 		#endregion Methods
 

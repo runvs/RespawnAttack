@@ -57,9 +57,18 @@ namespace JamTemplate
             {
                 _dyingTimer -= deltaT;
                 Velocity = new Vector2f(Velocity.X, Velocity.Y + GameProperties.GravityFactor);
+
+                Explosion expl = new Explosion(_world, 
+                    Position + RandomGenerator.GetRandomVector2f(
+                        new Vector2f(0, _sprite.Sprite.GetGlobalBounds().Width), 
+                        new Vector2f(_sprite.Sprite.GetGlobalBounds().Height/1.5f, _sprite.Sprite.GetGlobalBounds().Height)),
+                    GameProperties.ExplosionPlayerRange, GameProperties.ExplosionPlayerTotalTime/3.0f, 
+                    false);
+                _world.AddExplosion(expl);
                 if (_dyingTimer <= 0.0f)
                 {
                     IsDead = true;
+                    IsDying = false;
                 }
             }
             else
@@ -94,20 +103,28 @@ namespace JamTemplate
 
         private void DoEnemyMovement(float deltaT)
         {
-            float playerPosX = _world._player.Position.X - 25;  // the offset is for the fact that the enemy is larger than the pklayer but must be central over him
-            float enemyPosX = Position.X;
-            _playerIsInBombRange = false;
-            if (playerPosX > enemyPosX + GameProperties.EnemyBombRange)
+            if (!_world._player.IsDead)
             {
-                MoveRight();
-            }
-            else if (playerPosX < enemyPosX - GameProperties.EnemyBombRange)
-            {
-                MoveLeft();
+                float playerPosX = _world._player.Position.X - 25;  // the offset is for the fact that the enemy is larger than the pklayer but must be central over him
+                float enemyPosX = Position.X;
+                _playerIsInBombRange = false;
+                if (playerPosX > enemyPosX + GameProperties.EnemyBombRange)
+                {
+                    MoveRight();
+                }
+                else if (playerPosX < enemyPosX - GameProperties.EnemyBombRange)
+                {
+                    MoveLeft();
+                }
+                else
+                {
+                    _playerIsInBombRange = true;
+                }
             }
             else
             {
-                _playerIsInBombRange = true;
+                _playerIsInBombRange = false;
+
             }
 
             //Velocity = new Vector2f(Velocity.X, )
