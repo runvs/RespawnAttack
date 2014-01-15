@@ -168,6 +168,8 @@ namespace JamTemplate
             {
                 if (Health <= 0)
                 {
+
+		    ScreenEffects.ShakeScreen (0.5f, 0.05f, 2);
                     IsDying = true;
                     _dyingTimer += 3.5f;
                     _world.EnemyKilled();

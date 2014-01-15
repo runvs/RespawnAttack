@@ -84,6 +84,8 @@ namespace JamTemplate
                     Explosion expl = new Explosion(this, explosionPosition , GameProperties.ExplosionEnemyRange, GameProperties.ExplosionEnemyTotalTime);
                     _explosionList.Add(expl);
 
+		    ScreenEffects.ShakeScreen (0.5f, 0.05f, 2);
+
                     foreach (var t in _tileList)
                     {
 
