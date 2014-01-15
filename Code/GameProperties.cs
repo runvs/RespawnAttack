@@ -63,5 +63,7 @@ namespace JamTemplate
         public static float BackgroundCloudBaseFrequency { get { return 0.75f; } }
 
         public static float BackgroundCloudMovementSpeed { get { return 1.05f; } }
+
+        public static float EnemyYWobbleFrequency { get { return 1.5f; } }
     }
 }

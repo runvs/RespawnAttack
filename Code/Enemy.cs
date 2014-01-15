@@ -23,6 +23,7 @@ namespace JamTemplate
 
         private float _bombTimer;
         private bool _playerIsInBombRange;
+        private float _totalTime;
         
 
 
@@ -34,6 +35,7 @@ namespace JamTemplate
             IsDying = false;
             IsDead = false;
             _bombTimer = 0.0f;
+            _totalTime = 0.0f;
             
             try
             {
@@ -73,6 +75,7 @@ namespace JamTemplate
             }
             else
             {
+                _totalTime += deltaT;
                 DoEnemyMovement(deltaT);
 
                 if (_bombTimer >= 0)
@@ -124,14 +127,16 @@ namespace JamTemplate
             else
             {
                 _playerIsInBombRange = false;
-
             }
 
-            //Velocity = new Vector2f(Velocity.X, )
+
+
+            // Y Movement
+            Position = new Vector2f(Position.X, Position.Y +  0.75f* (float)Math.Sin(_totalTime * GameProperties.EnemyYWobbleFrequency ));
 
             Velocity *= GameProperties.VelocityDampingFactor;
-            
         }
+
 
         private void MoveLeft()
         {
