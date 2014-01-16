@@ -22,6 +22,9 @@ namespace JamTemplate
 
         private Background _background;
 
+        public float TotalTime { get; private set; }
+        public int NumberOfHits { get; private set; }
+
         #endregion Fields
 
         #region Methods
@@ -40,6 +43,7 @@ namespace JamTemplate
         public void Update(float deltaT)
         {
 
+            TotalTime += deltaT;
             _background.Update(deltaT);
             ScreenEffects.Update(deltaT);
 
@@ -61,6 +65,7 @@ namespace JamTemplate
                     {
                         _explosionList.Add(new Explosion(this, s.Position, GameProperties.ExplosionPlayerRange, GameProperties.ExplosionPlayerTotalTime));
                         s.IsAlive = false;
+                        NumberOfHits += 1;
                         _enemy.TakeDamage();
                     }
                 }
@@ -84,7 +89,7 @@ namespace JamTemplate
                     Explosion expl = new Explosion(this, explosionPosition , GameProperties.ExplosionEnemyRange, GameProperties.ExplosionEnemyTotalTime);
                     _explosionList.Add(expl);
 
-		    ScreenEffects.ShakeScreen (0.5f, 0.05f, 2);
+		            ScreenEffects.ShakeScreen (0.75f, 0.02f, 2);
 
                     foreach (var t in _tileList)
                     {
@@ -190,6 +195,8 @@ namespace JamTemplate
 
         private void InitGame()
         {
+            TotalTime = 0.0f;
+            NumberOfHits = 0;
             _shotList = new System.Collections.Generic.List<Shot>();
             _bombList = new System.Collections.Generic.List<Bomb>();
             _explosionList = new System.Collections.Generic.List<Explosion>();
@@ -245,5 +252,7 @@ namespace JamTemplate
 
             return score;
         }
+
+        
     }
 }

@@ -12,7 +12,7 @@ namespace JamTemplate
         private State _gameState;
 
         World _myWorld;
-        Score _gameStats;
+        Score _score;
         float _timeTilNextInput = 0.0f;
 
         #endregion Fields
@@ -89,7 +89,7 @@ namespace JamTemplate
 
                 if (_myWorld._player.IsDeadFinal)
                 {
-                    _gameStats = _myWorld.GetStats();
+                    _score = _myWorld.GetStats();
                     ChangeGameState(State.Score);
                 }
             }
@@ -113,7 +113,7 @@ namespace JamTemplate
             }
             else if (_gameState == State.Score)
             {
-                _gameStats.Draw(rw);
+                _score.Draw(rw);
             }
         }
 

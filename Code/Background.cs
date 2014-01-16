@@ -31,6 +31,7 @@ namespace JamTemplate
         public Background()
         {
             _star1 = new SmartSprite("../GFX/star1.png");
+            _star1.GlobalOffsetFactor = 0.5f;
             _totalTimePassed = 0.0f;
             _cloudMovementVector = new Vector2f(4, 0);
             CreateBackground();
@@ -113,7 +114,7 @@ namespace JamTemplate
             {
                 _cloudShape = new CircleShape(GameProperties.BackgroundCloudRadius);
                 _cloudShape.FillColor = _cloudColor;
-                _cloudShape.Position = v;
+                _cloudShape.Position = v + ScreenEffects.GlobalSpriteOffset *0.75f;
                 _cloudShape.Scale = _cloudLayerScale[i];
 
                 rw.Draw(_cloudShape);

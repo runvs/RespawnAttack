@@ -37,6 +37,8 @@ namespace JamTemplate
         private float _dyingTimer;
         private float _timeSinceDeath;
 
+        public int NumberOfShots { get; private set; }
+
 		#endregion Fields
 
 		#region Methods
@@ -48,14 +50,17 @@ namespace JamTemplate
 			_remainingLives = 3;
 
 			IsDead = IsDeadFinal = IsDying = false;
-			
+
+            NumberOfShots = 0;
+
+            Velocity = new Vector2f(0.0f, 0.0f);
+            Position = new Vector2f(0.0f, 500.0f);
+
+            Points = 0;
+            _scoreMultiplier = 1.0f;
+
 			SetupActionMap();
 
-			Velocity = new Vector2f(0.0f, 0.0f);
-			Position = new Vector2f(0.0f, 500.0f);
-
-			Points = 0;
-			_scoreMultiplier = 1.0f;
 			try
 			{
 				LoadGraphics();
@@ -158,6 +163,7 @@ namespace JamTemplate
 
 		private void Shoot()
 		{
+            NumberOfShots += 1;
 			Vector2f shotDirection = GameProperties.MousePosition -  Position;
 			float shotLength = (float)(Math.Sqrt(shotDirection.X*shotDirection.X + shotDirection.Y*shotDirection.Y));
 			shotDirection/=shotLength;
@@ -252,17 +258,16 @@ namespace JamTemplate
 
 		private void CheckFinalDead()
 		{
-			if (IsDead)
+			if (_remainingLives <= 0)
 			{
-				if (_remainingLives <= 0)
-				{
-					IsDeadFinal = true;
-				}
+				IsDeadFinal = true;
 			}
 		}
 
 		#endregion Methods
 
 
-	}
+
+        
+    }
 }
