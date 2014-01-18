@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JamUtilities;
+using SFML.Audio;
 using SFML.Graphics;
 using SFML.Window;
 
@@ -13,6 +14,10 @@ namespace JamTemplate
         private World _world;
         public SmartSprite _sprite;
         private float _timeSinceDrop;
+
+        private SoundBuffer _bombExplosionSoundBuffer;
+        private Sound _bombExplosionSound;
+
         public Bomb (World world, Vector2f position)
         {
             _world = world;
@@ -24,6 +29,11 @@ namespace JamTemplate
             try
             {
                 _sprite = new SmartSprite("../GFX/bomb.png");
+
+                _bombExplosionSoundBuffer = new SoundBuffer("../SFX/BombExplosion.wav");
+                _bombExplosionSound = new Sound(_bombExplosionSoundBuffer);
+                _bombExplosionSound.Volume = 25.0f;
+
             }
             catch (Exception e)
             {
@@ -45,7 +55,7 @@ namespace JamTemplate
             _timeSinceDrop += deltaT;
             DoBombMovement();
 
-            Position += Velocity * deltaT;
+            Position += Velocity * deltaT * (1.0f + GameProperties.EnemyLearingFactor * (_world.NumberOfKills + 1));
 
             //Console.WriteLine(Position);
 
@@ -55,10 +65,15 @@ namespace JamTemplate
 
         private void DoBombMovement()
         {
-            Velocity = new Vector2f(Velocity.X, Velocity.Y + GameProperties.GravityFactor);
-            _sprite.Scale(1.0f + 0.15f*_timeSinceDrop);
+            Velocity = new Vector2f(Velocity.X, Velocity.Y + GameProperties.GravityFactor * (1.0f + GameProperties.EnemyLearingFactor * (_world.NumberOfKills +1)));
+            _sprite.Scale(1.0f + 0.4f*_timeSinceDrop, ShakeDirection.UpDown);
         }
 
         public bool IsAlive { get; set; }
+
+        internal void Explode()
+        {
+            _bombExplosionSound.Play();
+        }
     }
 }

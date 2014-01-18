@@ -10,6 +10,7 @@ namespace JamTemplate
 {
     class GameProperties
     {
+        
 
         // Colors
 
@@ -37,7 +38,6 @@ namespace JamTemplate
 
         public static float PlayerShootTime { get { return 0.5f; } }
 
-
         public static float EnemyBombRange { get { return 25.0f; } }
 
         public static float EnemyAcceleration { get { return 16.0f; } }
@@ -45,6 +45,10 @@ namespace JamTemplate
         public static int PlayerDamage { get { return 7 + RandomGenerator.Random.Next(1, 5); } }
 
         public static float EnemyBombTimer { get { return 2.5f; } }
+        public static float EnemyLearingFactor { get { return 0.08f; } }
+        public static float EnemyYWobbleFrequency { get { return 1.5f; } }
+        public static int EnemyBaseHealth { get { return 110; } }
+
 
         public static float ExplosionEnemyRange { get { return 35.0f; } }
         public static float ExplosionPlayerRange { get { return 7.0f; } }
@@ -64,6 +68,6 @@ namespace JamTemplate
 
         public static float BackgroundCloudMovementSpeed { get { return 1.05f; } }
 
-        public static float EnemyYWobbleFrequency { get { return 1.5f; } }
+        
     }
 }

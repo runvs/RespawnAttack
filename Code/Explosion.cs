@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JamUtilities;
 using SFML.Graphics;
 using SFML.Window;
 
@@ -11,12 +12,13 @@ namespace JamTemplate
     {
         private World _world;
         public bool CanHitPlayer { get; private set; }
+        private static SmartSprite _glowSprite;
 
         public Explosion(World world, Vector2f position, float explosionRange, float explosionTotalTime, bool canHitPlayer = true)
         {
             _world = world;
             _explostionTotalRange = explosionRange;
-            _explosionTotlTime = explosionTotalTime;
+            _explosionTotalTime = explosionTotalTime;
             Position = position;
 
             _timeSinceExplosion = 0.0f;
@@ -24,7 +26,15 @@ namespace JamTemplate
             CanHitPlayer = canHitPlayer;
 
             CreateCircleList();
-
+            
+            if (_glowSprite == null)
+            {
+                Texture glowTexture;
+                uint glowsize = (uint)(GameProperties.ExplosionEnemyRange * 1.75f);
+                GlowSpriteCreator.CreateGlow(out glowTexture, glowsize, GameProperties.Color2, 0.25f);
+                _glowSprite = new SmartSprite(glowTexture);
+                _glowSprite.Sprite.Origin = new Vector2f(glowsize / 2.0f - 2.0f, glowsize / 2.0f - 2.0f);
+            }
 
         }
 
@@ -67,10 +77,16 @@ namespace JamTemplate
         System.Collections.Generic.List<CircleShape> _listCircles;
         private float _timeSinceExplosion;
         public float _explostionTotalRange;
-        private float _explosionTotlTime;
+        private float _explosionTotalTime;
 
         public void Draw (RenderWindow rw)
         {
+            if (CanHitPlayer)
+            {
+                _glowSprite.Position = Position;
+                _glowSprite.Scale(_scalingOffset);
+                _glowSprite.Draw(rw);
+            }
             foreach (var c in _listCircles)
             {
                 rw.Draw(c);
@@ -78,20 +94,21 @@ namespace JamTemplate
         }
 
         public float _explosionRadius;
+        private float _scalingOffset;
 
 
         public void Update (float deltaT)
         {
             _timeSinceExplosion += deltaT;
-            if (_timeSinceExplosion >= _explosionTotlTime * 1.25f)
+            if (_timeSinceExplosion >= _explosionTotalTime * 1.25f)
             {
                 IsAlive = false;
             }
             foreach (var c in _listCircles)
             {
-                float x = _timeSinceExplosion / _explosionTotlTime * 1.5f;
-                float offset = 1.05f - (x - 0.475f) * (x - 0.475f);
-                _explosionRadius = 1.0f + offset;
+                float x = _timeSinceExplosion / _explosionTotalTime * 1.5f;
+                _scalingOffset = 1.0f +  1.05f - (x - 0.475f) * (x - 0.475f);
+                _explosionRadius =  _scalingOffset;
                 c.Scale = new Vector2f(_explosionRadius, _explosionRadius);
             }
         }

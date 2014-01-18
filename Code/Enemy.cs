@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JamUtilities;
+using SFML.Audio;
 using SFML.Graphics;
 using SFML.Window;
 
@@ -24,12 +25,23 @@ namespace JamTemplate
 		private float _bombTimer;
 		private bool _playerIsInBombRange;
 		private float _totalTime;
-		
 
+        private static Sound _explosionSound;
+        private static SoundBuffer _explosionSoundBuffer;
+
+        private static Sound _hitSound;
+        private static SoundBuffer _hitSoundBuffer;
+
+        private static Sound _bombDropSound;
+        private static SoundBuffer _bombDropSoundBuffer;
+
+        private static Sound _heliRespawnSound;
+        private static SoundBuffer _heliRespawnSoundBuffer;
 
 		public Enemy (World world, Vector2f position)
 		{
-			Health = HealthMax = 100;
+
+            Health = HealthMax = GameProperties.EnemyBaseHealth;
 			_world = world;
 			Position = position;
 			IsDying = false;
@@ -40,12 +52,40 @@ namespace JamTemplate
 			try
 			{
 				_sprite = new SmartSprite("../GFX/enemy.png");
+                LoadSounds();
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
 			}
+
+            _heliRespawnSound.Play();
 		}
+
+        private void LoadSounds()
+        {
+            if (_explosionSoundBuffer == null)
+            {
+                _explosionSoundBuffer = new SoundBuffer("../SFX/HeliExplosionSound.wav");
+                _hitSoundBuffer = new SoundBuffer("../SFX/Hit.wav");
+                _bombDropSoundBuffer = new SoundBuffer("../SFX/BombDrop.wav");
+                _heliRespawnSoundBuffer = new SoundBuffer("../SFX/HeliRespawn.wav");
+            }
+            if (_explosionSound == null)
+            {
+                _explosionSound = new Sound(_explosionSoundBuffer);
+                _explosionSound.Volume = 25.0f;
+
+                _hitSound = new Sound(_hitSoundBuffer);
+                _hitSound.Volume = 25.0f;
+
+                _bombDropSound = new Sound(_bombDropSoundBuffer);
+                _bombDropSound.Volume = 25.0f;
+
+                _heliRespawnSound = new Sound(_heliRespawnSoundBuffer);
+                _heliRespawnSound.Volume = 15.0f;
+            }
+        }
 
 		public void Draw (RenderWindow rw)
 		{
@@ -80,7 +120,7 @@ namespace JamTemplate
 
 				if (_bombTimer >= 0)
 				{
-					_bombTimer -= deltaT;
+					_bombTimer -= deltaT * (1.0f + GameProperties.EnemyLearingFactor*(_world.NumberOfKills+1));
 				}
 				else
 				{
@@ -92,14 +132,14 @@ namespace JamTemplate
 
 			}
 
-			Position += deltaT * Velocity;
+			Position += deltaT * Velocity * (1.0f + GameProperties.EnemyLearingFactor*(_world.NumberOfKills+1));
 			_sprite.Update(deltaT);
 		}
 
 		private void DropBomb()
 		{
 			_bombTimer += GameProperties.EnemyBombTimer;
-
+            _bombDropSound.Play();
 			Bomb newBomb = new Bomb(_world, new Vector2f(Position.X + _sprite.Sprite.GetLocalBounds().Width / 2.0f, Position.Y + _sprite.Sprite.GetLocalBounds().Width));
 			_world.AddBomb(newBomb);
 		}
@@ -157,6 +197,8 @@ namespace JamTemplate
 
 				Health -= GameProperties.PlayerDamage;
 
+                _hitSound.Play();
+
 				CheckIfDead();
 			}
 
@@ -168,7 +210,7 @@ namespace JamTemplate
 			{
 				if (Health <= 0)
 				{
-
+                    _explosionSound.Play();
 					ScreenEffects.ShakeScreen (0.75f, 0.01f, 4);
 					IsDying = true;
 					_dyingTimer += 3.5f;

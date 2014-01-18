@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using JamUtilities;
 using SFMLCollision;
+using SFML.Audio;
 
 namespace JamTemplate
 {
@@ -39,6 +40,10 @@ namespace JamTemplate
 
         public int NumberOfShots { get; private set; }
 
+        private SoundBuffer _fireSoundBuffer;
+        private Sound _fireSound;
+
+
 		#endregion Fields
 
 		#region Methods
@@ -47,7 +52,7 @@ namespace JamTemplate
 		{
 			_world = world;
 			playerNumber = number;
-			_remainingLives = 3;
+			_remainingLives = 2;
 
 			IsDead = IsDeadFinal = IsDying = false;
 
@@ -64,6 +69,7 @@ namespace JamTemplate
 			try
 			{
 				LoadGraphics();
+                LoadSounds();
 			}
 			catch (SFML.LoadingFailedException e)
 			{
@@ -71,6 +77,8 @@ namespace JamTemplate
 				System.Console.Out.WriteLine(e.ToString());
 			}
 		}
+
+
 
 		private void SetPlayerNumberDependendProperties()
 		{
@@ -140,7 +148,14 @@ namespace JamTemplate
 
 			Vector2f movementVector = deltaT * Velocity;
 			Vector2f newPos = Position + movementVector;
-
+            if (newPos.X <= 10)
+            {
+                newPos.X = 10;
+            }
+            if (newPos.X >= 750)
+            {
+                newPos.X = 750;
+            }
 			Position = newPos;
 		}
 
@@ -164,6 +179,7 @@ namespace JamTemplate
 		private void Shoot()
 		{
             NumberOfShots += 1;
+            _fireSound.Play();
 			Vector2f shotDirection = GameProperties.MousePosition -  Position;
 			float shotLength = (float)(Math.Sqrt(shotDirection.X*shotDirection.X + shotDirection.Y*shotDirection.Y));
 			shotDirection/=shotLength;
@@ -232,10 +248,14 @@ namespace JamTemplate
 
 		private void LoadGraphics()
 		{
-
 			_sprite = new SmartSprite("../GFX/player.png");
 		}
-
+        private void LoadSounds()
+        {
+            _fireSoundBuffer = new SoundBuffer("../SFX/Fire.wav");
+            _fireSound = new Sound(_fireSoundBuffer);
+            _fireSound.Volume = 5.0f;
+        }
 
 		internal void AddKill()
 		{

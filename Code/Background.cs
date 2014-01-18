@@ -12,8 +12,11 @@ namespace JamTemplate
     {
 
         SmartSprite _star1;
+        SmartSprite _star2;
+        SmartSprite _star3;
 
-        System.Collections.Generic.List<Vector2f> _starLayer;
+        System.Collections.Generic.List<Vector2f> _starLayerPositions;
+        System.Collections.Generic.List<uint> _starLayerType;
         System.Collections.Generic.List<float> _starLayerAlphaFrequency;
 
 
@@ -30,8 +33,19 @@ namespace JamTemplate
 
         public Background()
         {
-            _star1 = new SmartSprite("../GFX/star1.png");
+            try
+            {
+                _star1 = new SmartSprite("../GFX/star1.png");
+                _star2 = new SmartSprite("../GFX/star2.png");
+                _star3 = new SmartSprite("../GFX/star3.png");
+            }
+            catch (SFML.LoadingFailedException e)
+            {
+                Console.WriteLine(e);
+            }
             _star1.GlobalOffsetFactor = 0.5f;
+            _star2.GlobalOffsetFactor = 0.5f;
+            _star3.GlobalOffsetFactor = 0.5f;
             _totalTimePassed = 0.0f;
             _cloudMovementVector = new Vector2f(4, 0);
             CreateBackground();
@@ -40,11 +54,20 @@ namespace JamTemplate
 
         private void CreateBackground()
         {
-            _starLayer = new List<Vector2f>();
+            _starLayerPositions = new List<Vector2f>();
             _starLayerAlphaFrequency = new List<float>();
+            _starLayerType = new List<uint>();
             for (int i = 0; i <= GameProperties.BackgroundNumberOfStars; i++)
             {
-                _starLayer.Add(RandomGenerator.GetRandomVector2f(new Vector2f(-0, 800.0f), new Vector2f(0, 600)));
+                if (RandomGenerator.Random.Next(2) == 0)
+                {
+                    _starLayerType.Add((uint)RandomGenerator.Random.Next(2, 4));
+                }
+                else
+                {
+                    _starLayerType.Add((uint)RandomGenerator.Random.Next(1, 4));
+                }
+                _starLayerPositions.Add(RandomGenerator.GetRandomVector2f(new Vector2f(-0, 800.0f), new Vector2f(0, 600)));
                 float alphaFrequency = (float)(JamUtilities.RandomGenerator.Random.NextDouble() + 0.5) * GameProperties.BackgroundAlphaBaseFrequency;
                 _starLayerAlphaFrequency.Add(alphaFrequency);
             }
@@ -55,7 +78,7 @@ namespace JamTemplate
             for (int i = 0; i <= GameProperties.BackgroundNumberOfClouds; i++)
             {
                 _cloudLayerPositions.Add(RandomGenerator.GetRandomVector2f(new Vector2f(-50, 750.0f), new Vector2f(0,600)));
-                _cloudLayerScale.Add(RandomGenerator.GetRandomVector2f(new Vector2f(1.0f, 1.1f), new Vector2f(0.30f, 0.35f)));
+                _cloudLayerScale.Add(RandomGenerator.GetRandomVector2f(new Vector2f(0.80f, 1.2f), new Vector2f(0.25f, 0.45f)));
 
                 _cloudLayerIndividualMovementFrequencies.Add(new Vector2f((float)((RandomGenerator.Random.NextDouble() + 0.5f) * GameProperties.BackgroundCloudBaseFrequency), (float)((RandomGenerator.Random.NextDouble() + 0.5f) * GameProperties.BackgroundCloudBaseFrequency)));
             }
@@ -101,11 +124,24 @@ namespace JamTemplate
             ScreenEffects.DrawFadeRadial(rw);
 
             int i = 0;
-            foreach (var v in _starLayer)
+            foreach (var v in _starLayerPositions)
             {
-                _star1.Position = v;
-                _star1.Alpha = (byte)(200 + 50*Math.Cos(_starLayerAlphaFrequency[i] * _totalTimePassed));
-                _star1.Draw(rw);
+                SmartSprite spr = null;
+                if (_starLayerType[i] == 1)
+                {
+                    spr = _star1;
+                }
+                else if (_starLayerType[i] == 2)
+                {
+                    spr = _star2;
+                }
+                else
+                {
+                    spr = _star3;
+                }
+                spr.Position = v;
+                spr.Alpha = (byte)(200 + 50*Math.Cos(_starLayerAlphaFrequency[i] * _totalTimePassed));
+                spr.Draw(rw);
                 i++;
             }
 

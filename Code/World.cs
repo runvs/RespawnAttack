@@ -24,7 +24,7 @@ namespace JamTemplate
 
         public float TotalTime { get; private set; }
         public int NumberOfHits { get; private set; }
-
+        public int NumberOfKills { get; private set; }
         #endregion Fields
 
         #region Methods
@@ -63,7 +63,9 @@ namespace JamTemplate
                 {
                     if (SFMLCollision.Collision.BoundingBoxTest(s.GetSprite(), _enemy.GetSprite()))
                     {
-                        _explosionList.Add(new Explosion(this, s.Position, GameProperties.ExplosionPlayerRange, GameProperties.ExplosionPlayerTotalTime));
+                        _explosionList.Add(
+                            new Explosion(this, s.Position, GameProperties.ExplosionPlayerRange, GameProperties.ExplosionPlayerTotalTime, false)
+                            );
                         s.IsAlive = false;
                         NumberOfHits += 1;
                         _enemy.TakeDamage();
@@ -88,8 +90,8 @@ namespace JamTemplate
                     Vector2f explosionPosition = new Vector2f(b.Position.X +b._sprite.Sprite.GetGlobalBounds().Width/2.0f, b.Position.Y + b._sprite.Sprite.GetGlobalBounds().Height/2.0f);
                     Explosion expl = new Explosion(this, explosionPosition , GameProperties.ExplosionEnemyRange, GameProperties.ExplosionEnemyTotalTime);
                     _explosionList.Add(expl);
-
-		            ScreenEffects.ShakeScreen (0.75f, 0.02f, 2);
+                    b.Explode();
+		            ScreenEffects.ShakeScreen (0.75f, 0.001f, 3, ShakeDirection.UpDown);
 
                     foreach (var t in _tileList)
                     {
@@ -100,7 +102,7 @@ namespace JamTemplate
 
                         if (distanceTileToExplosion <= 150.0f)
                         {
-                            t._sprite.Shake(0.5f, 0.025f, 6.0f * (1 - distanceTileToExplosion/150.0f));
+                            t._sprite.Shake(0.5f, 0.0025f, 10.0f * (float)Math.Pow((1 - distanceTileToExplosion/150.0f),2.0), ShakeDirection.UpDown);
                         }
                     }
 
@@ -117,6 +119,7 @@ namespace JamTemplate
 
             if (_enemy.IsDead)
             {
+                NumberOfKills++;
                 RespawnEnemy();
             }
 
@@ -203,6 +206,7 @@ namespace JamTemplate
             _tileList = new System.Collections.Generic.List<Tile>();
             CreateWorld();
 
+            NumberOfKills = 0;
             _player = new Player(this, 0);
         }
 

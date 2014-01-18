@@ -14,6 +14,7 @@ namespace JamTemplate
         World _myWorld;
         Score _score;
         float _timeTilNextInput = 0.0f;
+        SmartSprite _glowSprite;
 
         #endregion Fields
 
@@ -32,6 +33,12 @@ namespace JamTemplate
             //ScreenEffects._fadeColor = GameProperties.Color1;
             ScreenEffects.Init(new Vector2u(800,600));
 
+            Texture glowTexture;
+            uint glowsize = 30;
+            GlowSpriteCreator.CreateGlow(out glowTexture, glowsize, GameProperties.Color3, 0.3f);
+            _glowSprite = new SmartSprite(glowTexture);
+            _glowSprite.Origin = new Vector2f(glowsize / 2.0f + 2.0f, glowsize / 2.0f + 2.0f);
+            _glowSprite.Scale(5.5f, ShakeDirection.LeftRight);
             CanBeQuit = true;
         }
 
@@ -46,6 +53,10 @@ namespace JamTemplate
                 else if (_gameState == State.Game)
                 {
                     _myWorld.GetInput();
+                    if (Keyboard.IsKeyPressed(Keyboard.Key.Escape))
+                    {
+                        ChangeGameState(State.Menu);
+                    }
                 }
                 else if (_gameState == State.Credits || _gameState == State.Score)
                 {
@@ -82,7 +93,7 @@ namespace JamTemplate
             {
                 _timeTilNextInput -= deltaT;
             }
-
+            CanBeQuit = false;
             if (_gameState == State.Game)
             {
                 _myWorld.Update(deltaT);
@@ -93,6 +104,11 @@ namespace JamTemplate
                     ChangeGameState(State.Score);
                 }
             }
+            else if (_gameState == State.Menu && this._timeTilNextInput <= 0.0f) 
+            {
+                CanBeQuit = true;
+            }
+
 
         }
 
@@ -119,31 +135,38 @@ namespace JamTemplate
 
         private void DrawMenu(RenderWindow rw)
         {
-            SmartText.DrawText("$GameTitle$", TextAlignment.MID, new Vector2f(400.0f, 150.0f), 1.5f, rw);
+            _glowSprite.Position = new Vector2f(410.0f, 175.0f);
+            _glowSprite.Draw(rw);
+            SmartText.DrawText("Respawn, Attack!", TextAlignment.MID, new Vector2f(400.0f, 139.0f), new Vector2f(1.25f, 1.25f), GameProperties.Color2, rw);
 
-            SmartText.DrawText("Start [Return]", TextAlignment.MID, new Vector2f(400.0f, 250.0f), rw);
-            SmartText.DrawText("W A S D & LShift", TextAlignment.MID, new Vector2f(530.0f, 340.0f), rw);
-            SmartText.DrawText("Arrows & RCtrl", TextAlignment.MID, new Vector2f(180.0f, 340.0f), rw);
+            SmartText.DrawText("Start [Return]", TextAlignment.MID, new Vector2f(400.0f, 250.0f), GameProperties.Color1, rw);
+            SmartText.DrawText("W A S D ", TextAlignment.LEFT, new Vector2f(200.0f, 340.0f), GameProperties.Color2, rw);
+            SmartText.DrawText("Move", TextAlignment.RIGHT, new Vector2f(600.0f, 340.0f), GameProperties.Color2, rw);
+            SmartText.DrawText("Space, LMB", TextAlignment.LEFT, new Vector2f(200, 390.0f), GameProperties.Color2, rw);
+            SmartText.DrawText("Shoot", TextAlignment.RIGHT, new Vector2f(600, 390.0f), GameProperties.Color2, rw);
 
-            SmartText.DrawText("[C]redits", TextAlignment.LEFT, new Vector2f(30.0f, 550.0f), rw);
+            SmartText.DrawText("[C]redits", TextAlignment.LEFT, new Vector2f(30.0f, 550.0f), GameProperties.Color4, rw);
 
         }
 
         private void DrawCredits(RenderWindow rw)
         {
 
-            SmartText.DrawText("$GameTitle$", TextAlignment.MID, new Vector2f(400.0f, 20.0f), 1.5f, rw);
+            SmartText.DrawText("Respawn, Attack!", TextAlignment.MID, new Vector2f(400.0f, 20.0f), new Vector2f(1.25f, 1.25f), GameProperties.Color2, rw);
 
             SmartText.DrawText("A Game by", TextAlignment.MID, new Vector2f(400.0f, 100.0f), 0.75f, rw);
-            SmartText.DrawText("$DeveloperNames$", TextAlignment.MID, new Vector2f(400.0f, 135.0f), rw);
+            SmartText.DrawText("Simon Weis @Laguna999", TextAlignment.MID, new Vector2f(400.0f, 135.0f), rw);
 
             SmartText.DrawText("Visual Studio 2012 \t C#", TextAlignment.MID, new Vector2f(400, 170), 0.75f, rw);
             SmartText.DrawText("aseprite \t SFML.NET 2.1", TextAlignment.MID, new Vector2f(400, 200), 0.75f, rw);
+            SmartText.DrawText("SFXR \t Cubase",TextAlignment.MID, new Vector2f(400, 230), 0.75f, rw);
+
 
             SmartText.DrawText("Thanks to", TextAlignment.MID, new Vector2f(400, 350), 0.75f, rw);
-            SmartText.DrawText("Families & Friends for their great support", TextAlignment.MID, new Vector2f(400, 375), 0.75f, rw);
+            SmartText.DrawText("MasterGFXer Thunraz", TextAlignment.MID, new Vector2f(400, 375), 0.75f, rw);
+            SmartText.DrawText("Families & Friends for their great support", TextAlignment.MID, new Vector2f(400, 400), 0.75f, rw);
 
-            SmartText.DrawText("Created $Date$", TextAlignment.MID, new Vector2f(400.0f, 500.0f), 0.75f, rw);
+            SmartText.DrawText("Created Jan 2014", TextAlignment.MID, new Vector2f(400.0f, 500.0f), 0.75f, rw);
 
         }
 
