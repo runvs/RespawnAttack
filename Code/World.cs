@@ -93,6 +93,8 @@ namespace JamTemplate
                     b.Explode();
 		            ScreenEffects.ShakeScreen (0.75f, 0.001f, 3, ShakeDirection.UpDown);
 
+                    
+
                     foreach (var t in _tileList)
                     {
 
@@ -103,6 +105,13 @@ namespace JamTemplate
                         if (distanceTileToExplosion <= 150.0f)
                         {
                             t._sprite.Shake(0.5f, 0.0025f, 10.0f * (float)Math.Pow((1 - distanceTileToExplosion/150.0f),2.0), ShakeDirection.UpDown);
+                            ParticleManager.SpawnSmokeCloud(new Vector2f(t.TilePosition.X, t.TilePosition.Y - 0.25f) * GameProperties.TileSizeInPixels, GameProperties.TileSizeInPixels / 2.5f, 7, GameProperties.Color9, 2.6f);
+                            if (distanceTileToExplosion <= 75.0f)
+                            {
+                                ParticleManager.SpawnSmokeCloud(new Vector2f(t.TilePosition.X, t.TilePosition.Y - 0.25f) * GameProperties.TileSizeInPixels, GameProperties.TileSizeInPixels / 2.5f, 7, GameProperties.Color8, 3.0f);
+                                ParticleManager.SpawnSmokeCloud(new Vector2f(t.TilePosition.X, t.TilePosition.Y - 0.25f) * GameProperties.TileSizeInPixels, GameProperties.TileSizeInPixels / 2.5f, 7, GameProperties.Color8, 3.5f);
+                            }
+                            
                         }
                     }
 
@@ -138,6 +147,10 @@ namespace JamTemplate
 
             }
             _explosionList = newExplosionList;
+
+            
+
+            ParticleManager.Update(deltaT);
 
         }
 
@@ -185,6 +198,8 @@ namespace JamTemplate
             _enemy.Draw(rw);
 
             _player.Draw(rw);
+
+            ParticleManager.Draw(rw);
 
             foreach (var e in _explosionList)
             {

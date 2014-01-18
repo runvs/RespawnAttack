@@ -107,6 +107,11 @@ namespace JamTemplate
 					GameProperties.ExplosionPlayerRange, GameProperties.ExplosionPlayerTotalTime/3.0f, 
 					false);
 				_world.AddExplosion(expl);
+
+                ParticleManager.SpawnSmokeCloud(Position + RandomGenerator.GetRandomVector2f(
+                        new Vector2f(0, _sprite.Sprite.GetGlobalBounds().Width),
+                        new Vector2f(_sprite.Sprite.GetGlobalBounds().Height / 1.5f, _sprite.Sprite.GetGlobalBounds().Height)), 10, 7.0f, GameProperties.Color8);
+
 				if (_dyingTimer <= 0.0f)
 				{
 					IsDead = true;
@@ -200,6 +205,10 @@ namespace JamTemplate
                 _hitSound.Play();
 
 				CheckIfDead();
+
+                ParticleManager.SpawnSmokeCloud(Position + RandomGenerator.GetRandomVector2f(
+                        new Vector2f(0, _sprite.Sprite.GetGlobalBounds().Width),
+                        new Vector2f(_sprite.Sprite.GetGlobalBounds().Height / 1.5f, _sprite.Sprite.GetGlobalBounds().Height)),10, 7.0f, GameProperties.Color8);
 			}
 
 		}
