@@ -98,8 +98,9 @@ namespace JamTemplate
 			if (IsDying)
 			{
 				_dyingTimer -= deltaT;
-				Velocity = new Vector2f(Velocity.X, Velocity.Y + GameProperties.GravityFactor);
+				Velocity = new Vector2f(Velocity.X, Velocity.Y + GameProperties.GravityFactor * 1.25f); // accellerate downwards
 
+                //spawn some little explosions every frame
 				Explosion expl = new Explosion(_world, 
 					Position + RandomGenerator.GetRandomVector2f(
 						new Vector2f(0, _sprite.Sprite.GetGlobalBounds().Width), 
@@ -108,6 +109,7 @@ namespace JamTemplate
 					false);
 				_world.AddExplosion(expl);
 
+                // spawn some smoke Clouds 
                 ParticleManager.SpawnSmokeCloud(Position + RandomGenerator.GetRandomVector2f(
                         new Vector2f(0, _sprite.Sprite.GetGlobalBounds().Width),
                         new Vector2f(_sprite.Sprite.GetGlobalBounds().Height / 1.5f, _sprite.Sprite.GetGlobalBounds().Height)), 10, 7.0f, GameProperties.Color8);
@@ -224,6 +226,10 @@ namespace JamTemplate
 					IsDying = true;
 					_dyingTimer += 3.5f;
 					_world.EnemyKilled();
+
+                    Explosion expl = new Explosion(_world, Position + new Vector2f(_sprite.Sprite.GetGlobalBounds().Width / 2.0f, _sprite.Sprite.GetGlobalBounds().Height / 2.0f), GameProperties.ExplosionEnemyRange, GameProperties.ExplosionEnemyTotalTime / 2.0f);
+                    _world.AddExplosion(expl);
+
 				}
 			}
 		}

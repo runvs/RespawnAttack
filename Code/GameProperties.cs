@@ -56,6 +56,8 @@ namespace JamTemplate
         public static float ExplosionEnemyTotalTime { get { return 1.0f; } }
         public static float ExplosionPlayerTotalTime { get { return 0.50f; } }
 
+        public static uint ExplosionNumberOfRadialFlares { get { return 8; } }
+
         public static int BackgroundNumberOfStars { get { return 45; } }
 
         public static float BackgroundAlphaBaseFrequency { get { return 5.0f; } }

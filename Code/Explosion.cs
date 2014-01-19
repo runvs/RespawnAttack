@@ -13,6 +13,8 @@ namespace JamTemplate
         private World _world;
         public bool CanHitPlayer { get; private set; }
         private static SmartSprite _glowSprite;
+        private static SmartSprite _radialFlareSprite;
+        private float _flareAngleOffset;
 
         public Explosion(World world, Vector2f position, float explosionRange, float explosionTotalTime, bool canHitPlayer = true)
         {
@@ -26,16 +28,52 @@ namespace JamTemplate
             CanHitPlayer = canHitPlayer;
 
             CreateCircleList();
+
+            CreateGlowTexture();
+
+            CreateRadialFlares();
+
+            CreateSmokeClouds();
+        }
+
+        private void CreateSmokeClouds()
+        {
+            if (CanHitPlayer)
+            {
+                for (uint i = 0; i != ParticleManager.NumberOfSmokeCloudParticles*9; i++)
+                {
+                    Vector2f puffPosition = Position + RandomGenerator.GetRandomVector2fSquare(_explostionTotalRange * 2.5f);
+                    Vector2f puffvelocity = -1.5f * (Position - puffPosition);
+                    ParticleManager.SpawnSmokePuff(puffPosition, puffvelocity, GameProperties.Color8, 7, 3.5f);
+                }
+            }
             
+        }
+
+        private void CreateRadialFlares()
+        {
+            if (_radialFlareSprite == null)
+            {
+                Texture flareTexture;
+                uint glowsizeX = (uint)(GameProperties.ExplosionEnemyRange * 3.0f);
+                uint glowsizeY = (uint)(GameProperties.ExplosionEnemyRange * 0.1f);
+                GlowSpriteCreator.CreateLinearGlowInOut(out flareTexture, glowsizeX, glowsizeY, GameProperties.Color2, 0.25f, PennerDoubleAnimation.EquationType.Linear, ShakeDirection.LeftRight);
+                _radialFlareSprite = new SmartSprite(flareTexture);
+                _radialFlareSprite.Sprite.Origin = new Vector2f(glowsizeX/2.0f, glowsizeY / 2.0f - 2.0f);
+            }
+            _flareAngleOffset = (float)RandomGenerator.Random.Next(0, 90);
+        }
+
+        private void CreateGlowTexture()
+        {
             if (_glowSprite == null)
             {
                 Texture glowTexture;
-                uint glowsize = (uint)(GameProperties.ExplosionEnemyRange * 1.75f);
-                GlowSpriteCreator.CreateGlow(out glowTexture, glowsize, GameProperties.Color2, 0.25f);
+                uint glowsize = (uint)(GameProperties.ExplosionEnemyRange * 4.35f);
+                GlowSpriteCreator.CreateRadialGlow(out glowTexture, glowsize, GameProperties.Color2, 0.35f, PennerDoubleAnimation.EquationType.CubicEaseOut);
                 _glowSprite = new SmartSprite(glowTexture);
                 _glowSprite.Sprite.Origin = new Vector2f(glowsize / 2.0f - 2.0f, glowsize / 2.0f - 2.0f);
             }
-
         }
 
         private void CreateCircleList()
@@ -81,16 +119,27 @@ namespace JamTemplate
 
         public void Draw (RenderWindow rw)
         {
-            if (CanHitPlayer)
-            {
-                _glowSprite.Position = Position;
-                _glowSprite.Scale(_scalingOffset);
-                _glowSprite.Draw(rw);
-            }
             foreach (var c in _listCircles)
             {
                 rw.Draw(c);
             }
+            if (CanHitPlayer)
+            {
+                for (uint i = 0; i != GameProperties.ExplosionNumberOfRadialFlares; i++)
+                {
+                    _radialFlareSprite.Position = Position;
+                    _radialFlareSprite.Scale(_scalingOffset, ShakeDirection.LeftRight);
+                    _radialFlareSprite.Rotation = _flareAngleOffset+  i * 360.0f / GameProperties.ExplosionNumberOfRadialFlares;
+                    _radialFlareSprite.Draw(rw);
+                }
+
+                _glowSprite.Position = Position;
+                _glowSprite.Scale(_scalingOffset);
+                _glowSprite.Draw(rw);
+
+                
+            }
+
         }
 
         public float _explosionRadius;

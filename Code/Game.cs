@@ -35,7 +35,7 @@ namespace JamTemplate
 
             Texture glowTexture;
             uint glowsize = 30;
-            GlowSpriteCreator.CreateGlow(out glowTexture, glowsize, GameProperties.Color3, 0.3f);
+            GlowSpriteCreator.CreateRadialGlow(out glowTexture, glowsize, GameProperties.Color3, 0.3f);
             _glowSprite = new SmartSprite(glowTexture);
             _glowSprite.Origin = new Vector2f(glowsize / 2.0f + 2.0f, glowsize / 2.0f + 2.0f);
             _glowSprite.Scale(5.5f, ShakeDirection.LeftRight);

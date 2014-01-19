@@ -30,8 +30,8 @@ namespace JamTemplate
                 if (_glowSprite == null)
                 {
                     Texture glowTexture;
-                    uint glowsize = 20;
-                    GlowSpriteCreator.CreateGlow(out glowTexture, glowsize, GameProperties.Color3);
+                    uint glowsize = 24;
+                    GlowSpriteCreator.CreateRadialGlow(out glowTexture, glowsize, GameProperties.Color3, 0.4f, PennerDoubleAnimation.EquationType.CubicEaseInOut);
                     _glowSprite = new SmartSprite(glowTexture);
                     _glowSprite.Sprite.Origin = new Vector2f(glowsize / 2.0f - 2.0f, glowsize / 2.0f - 2.0f);
                 }
@@ -54,7 +54,7 @@ namespace JamTemplate
         public void Update (float deltaT)
         {
             _totalTime += deltaT;
-
+            _glowSprite.Alpha = (byte)(255 * (0.5+  0.5 * RandomGenerator.Random.NextDouble()));
             DoBulletMovement(deltaT);
             
             
