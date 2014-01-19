@@ -16,6 +16,14 @@ namespace JamTemplate
         private static SmartSprite _radialFlareSprite;
         private float _flareAngleOffset;
 
+        System.Collections.Generic.List<CircleShape> _listCircles;
+        private float _timeSinceExplosion;
+        public float _explostionTotalRange;
+        private float _explosionTotalTime;
+        public float _explosionRadius;
+        private float _scalingOffset;
+        private float _flareScaleOffset;
+
         public Explosion(World world, Vector2f position, float explosionRange, float explosionTotalTime, bool canHitPlayer = true)
         {
             _world = world;
@@ -62,6 +70,7 @@ namespace JamTemplate
                 _radialFlareSprite.Sprite.Origin = new Vector2f(glowsizeX/2.0f, glowsizeY / 2.0f - 2.0f);
             }
             _flareAngleOffset = (float)RandomGenerator.Random.Next(0, 90);
+            //_flareScaleOffset = (float)( RandomGenerator.Random.NextDouble() + 0.5);
         }
 
         private void CreateGlowTexture()
@@ -112,10 +121,8 @@ namespace JamTemplate
             _listCircles.Add(circ);
         }
 
-        System.Collections.Generic.List<CircleShape> _listCircles;
-        private float _timeSinceExplosion;
-        public float _explostionTotalRange;
-        private float _explosionTotalTime;
+
+
 
         public void Draw (RenderWindow rw)
         {
@@ -128,8 +135,8 @@ namespace JamTemplate
                 for (uint i = 0; i != GameProperties.ExplosionNumberOfRadialFlares; i++)
                 {
                     _radialFlareSprite.Position = Position;
-                    _radialFlareSprite.Scale(_scalingOffset, ShakeDirection.LeftRight);
-                    _radialFlareSprite.Rotation = _flareAngleOffset+  i * 360.0f / GameProperties.ExplosionNumberOfRadialFlares;
+                    _radialFlareSprite.Scale(_scalingOffset + _flareScaleOffset, ShakeDirection.LeftRight);
+                    _radialFlareSprite.Rotation = _flareAngleOffset +  i * 360.0f / GameProperties.ExplosionNumberOfRadialFlares;
                     _radialFlareSprite.Draw(rw);
                 }
 
@@ -142,13 +149,13 @@ namespace JamTemplate
 
         }
 
-        public float _explosionRadius;
-        private float _scalingOffset;
 
 
         public void Update (float deltaT)
         {
             _timeSinceExplosion += deltaT;
+
+            //_flareAngleOffset += 15.0f * deltaT;
             if (_timeSinceExplosion >= _explosionTotalTime * 1.25f)
             {
                 IsAlive = false;
