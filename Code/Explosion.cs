@@ -23,6 +23,7 @@ namespace JamTemplate
         public float _explosionRadius;
         private float _scalingOffset;
         private float _flareScaleOffset;
+        private Color _screenFlashColor;
 
         public Explosion(World world, Vector2f position, float explosionRange, float explosionTotalTime, bool canHitPlayer = true)
         {
@@ -42,6 +43,14 @@ namespace JamTemplate
             CreateRadialFlares();
 
             CreateSmokeClouds();
+
+            _screenFlashColor = GameProperties.Color2;
+            _screenFlashColor.A = 75;
+
+            if (CanHitPlayer)
+            {
+                ScreenEffects.ScreenFlash(_screenFlashColor, 0.25f);
+            }
         }
 
         private void CreateSmokeClouds()

@@ -34,7 +34,7 @@ namespace JamTemplate
 		public bool IsDead { get; private set; }
 		public bool IsDeadFinal { get; private set; }
 		private int _remainingLives;
-		private float _godModeTimer;
+		public float _godModeTimer;
         private float _dyingTimer;
         private float _timeSinceDeath;
 
@@ -92,11 +92,15 @@ namespace JamTemplate
 				if (movementTimer <= 0.0f)
 				{
 					MapInputToActions();
+                    if (Mouse.IsButtonPressed(Mouse.Button.Left))
+                    {
+                        ShootAction();
+                    }
 				}
 			}
 			else
 			{
-				if (Mouse.IsButtonPressed(Mouse.Button.Left))
+				if (Mouse.IsButtonPressed(Mouse.Button.Right))
 				{
 					RespawnPlayer();
 				}
@@ -108,11 +112,11 @@ namespace JamTemplate
 			IsDead = false;
 			_remainingLives--;
 			//CheckFinalDead();
-			Position = new Vector2f(GameProperties.MousePosition.X, 500);
+			Position = new Vector2f(GameProperties.MousePosition.X, -75);
 			ScreenEffects.ScreenFlash(GameProperties.Color1, 0.5f);
-			_godModeTimer += 1.5f;
+			_godModeTimer += GameProperties.PlayerGodModeTime;
+            _scoreMultiplier = 1.0f;
 		}
-
 
 		public void Update(float deltaT)
 		{
@@ -126,6 +130,18 @@ namespace JamTemplate
 			if (_godModeTimer >= 0.0f)
 			{
 				_godModeTimer -= deltaT;
+                float value = (float)PennerDoubleAnimation.GetValue(PennerDoubleAnimation.EquationType.CubicEaseIn, GameProperties.PlayerGodModeTime - _godModeTimer , 0,1, 0.75);
+                if (Position.Y + _sprite.Sprite.GetGlobalBounds().Height * value < 500)
+                {
+                    
+                    Position = new Vector2f(Position.X, Position.Y + 60.0f * GameProperties.GravityFactor * deltaT* value);
+                    _sprite.Scale(0.25f + 0.75f*value, ShakeDirection.UpDown);
+                }
+                else
+                {
+                    Position = new Vector2f(Position.X, 500);
+                    _sprite.Scale(1.0f, ShakeDirection.UpDown);
+                }
 			}
             if (IsDying)
             {
@@ -139,6 +155,7 @@ namespace JamTemplate
                 }
                 Position = new Vector2f(Position.X + 55.0f * deltaT, Position.Y  -8.0f*(_timeSinceDeath/1.5f) + 25.0f * (float)Math.Pow((_timeSinceDeath/1.5f),2.0));
             }
+
 		}
 
 		private void DoPlayerMovement(float deltaT)
@@ -209,8 +226,7 @@ namespace JamTemplate
             {
                 Vector2f pos = GameProperties.MousePosition;
                 pos.Y = 150;
-                SmartText.DrawText("Click For Respawn", pos, rw);
-
+                SmartText.DrawText("Right Click For Respawn", TextAlignment.MID, pos, rw);
             }
 			//DrawScore(rw); // this will be done in the World class
 		}

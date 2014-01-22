@@ -98,27 +98,17 @@ namespace JamTemplate
 			if (IsDying)
 			{
 				_dyingTimer -= deltaT;
+
+                if (_dyingTimer <= 0.0f)
+                {
+                    IsDead = true;
+                    IsDying = false;
+                }
+
 				Velocity = new Vector2f(Velocity.X, Velocity.Y + GameProperties.GravityFactor * 1.25f); // accellerate downwards
 
-                //spawn some little explosions every frame
-				Explosion expl = new Explosion(_world, 
-					Position + RandomGenerator.GetRandomVector2f(
-						new Vector2f(0, _sprite.Sprite.GetGlobalBounds().Width), 
-						new Vector2f(_sprite.Sprite.GetGlobalBounds().Height/1.5f, _sprite.Sprite.GetGlobalBounds().Height)),
-					GameProperties.ExplosionPlayerRange, GameProperties.ExplosionPlayerTotalTime/3.0f, 
-					false);
-				_world.AddExplosion(expl);
+                DoDyingEffects(deltaT);
 
-                // spawn some smoke Clouds 
-                ParticleManager.SpawnSmokeCloud(Position + RandomGenerator.GetRandomVector2f(
-                        new Vector2f(0, _sprite.Sprite.GetGlobalBounds().Width),
-                        new Vector2f(_sprite.Sprite.GetGlobalBounds().Height / 1.5f, _sprite.Sprite.GetGlobalBounds().Height)), 10, 7.0f, GameProperties.Color8);
-
-				if (_dyingTimer <= 0.0f)
-				{
-					IsDead = true;
-					IsDying = false;
-				}
 			}
 			else
 			{
@@ -142,6 +132,23 @@ namespace JamTemplate
 			Position += deltaT * Velocity * (1.0f + GameProperties.EnemyLearingFactor*(_world.NumberOfKills+1));
 			_sprite.Update(deltaT);
 		}
+
+        private void DoDyingEffects(float deltaT)
+        {
+            //spawn some little explosions every frame
+            Explosion expl = new Explosion(_world,
+                Position + RandomGenerator.GetRandomVector2f(
+                    new Vector2f(0, _sprite.Sprite.GetGlobalBounds().Width),
+                    new Vector2f(_sprite.Sprite.GetGlobalBounds().Height / 1.5f, _sprite.Sprite.GetGlobalBounds().Height)),
+                GameProperties.ExplosionPlayerRange, GameProperties.ExplosionPlayerTotalTime / 3.0f,
+                false);
+            _world.AddExplosion(expl);
+
+            // spawn some smoke Clouds 
+            ParticleManager.SpawnSmokeCloud(Position + RandomGenerator.GetRandomVector2f(
+                    new Vector2f(0, _sprite.Sprite.GetGlobalBounds().Width),
+                    new Vector2f(_sprite.Sprite.GetGlobalBounds().Height / 1.5f, _sprite.Sprite.GetGlobalBounds().Height)), 10, 7.0f, GameProperties.Color8);
+        }
 
 		private void DropBomb()
 		{
@@ -224,7 +231,7 @@ namespace JamTemplate
                     _explosionSound.Play();
 					ScreenEffects.ShakeScreen (0.75f, 0.01f, 4);
 					IsDying = true;
-					_dyingTimer += 3.5f;
+					_dyingTimer += GameProperties.EnemyDyingTime;
 					_world.EnemyKilled();
 
                     Explosion expl = new Explosion(_world, Position + new Vector2f(_sprite.Sprite.GetGlobalBounds().Width / 2.0f, _sprite.Sprite.GetGlobalBounds().Height / 2.0f), GameProperties.ExplosionEnemyRange, GameProperties.ExplosionEnemyTotalTime / 2.0f);

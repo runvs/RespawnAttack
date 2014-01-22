@@ -140,10 +140,12 @@ namespace JamTemplate
             SmartText.DrawText("Respawn, Attack!", TextAlignment.MID, new Vector2f(400.0f, 139.0f), new Vector2f(1.25f, 1.25f), GameProperties.Color2, rw);
 
             SmartText.DrawText("Start [Return]", TextAlignment.MID, new Vector2f(400.0f, 250.0f), GameProperties.Color1, rw);
-            SmartText.DrawText("W A S D ", TextAlignment.LEFT, new Vector2f(200.0f, 340.0f), GameProperties.Color2, rw);
+            SmartText.DrawText("A D ", TextAlignment.LEFT, new Vector2f(200.0f, 340.0f), GameProperties.Color2, rw);
             SmartText.DrawText("Move", TextAlignment.RIGHT, new Vector2f(600.0f, 340.0f), GameProperties.Color2, rw);
             SmartText.DrawText("Space, LMB", TextAlignment.LEFT, new Vector2f(200, 390.0f), GameProperties.Color2, rw);
             SmartText.DrawText("Shoot", TextAlignment.RIGHT, new Vector2f(600, 390.0f), GameProperties.Color2, rw);
+            SmartText.DrawText("RMB", TextAlignment.LEFT, new Vector2f(200, 440.0f), GameProperties.Color2, rw);
+            SmartText.DrawText("Respawn", TextAlignment.RIGHT, new Vector2f(600, 440.0f), GameProperties.Color2, rw);
 
             SmartText.DrawText("[C]redits", TextAlignment.LEFT, new Vector2f(30.0f, 550.0f), GameProperties.Color4, rw);
 

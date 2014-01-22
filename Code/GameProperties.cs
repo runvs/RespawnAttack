@@ -70,6 +70,10 @@ namespace JamTemplate
 
         public static float BackgroundCloudMovementSpeed { get { return 1.05f; } }
 
-        
+
+
+        public static float PlayerGodModeTime { get { return 2.75f; } }
+
+        public static float EnemyDyingTime { get { return 3.0f; } }
     }
 }
