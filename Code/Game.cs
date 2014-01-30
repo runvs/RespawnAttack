@@ -15,6 +15,7 @@ namespace JamTemplate
         Score _score;
         float _timeTilNextInput = 0.0f;
         SmartSprite _glowSprite;
+        SFML.Audio.Music _gameMusic;
 
         #endregion Fields
 
@@ -40,6 +41,12 @@ namespace JamTemplate
             _glowSprite.Origin = new Vector2f(glowsize / 2.0f + 2.0f, glowsize / 2.0f + 2.0f);
             _glowSprite.Scale(5.5f, ShakeDirection.LeftRight);
             CanBeQuit = true;
+
+            _gameMusic = new SFML.Audio.Music("../SFX/RespawnAttack_OST2.ogg");
+            _gameMusic.Loop = true;
+            _gameMusic.Volume = 18.0f;
+            _gameMusic.Play();
+
         }
 
         public void GetInput()
@@ -81,7 +88,7 @@ namespace JamTemplate
 
         private void GetInputCreditsScore()
         {
-            if (Keyboard.IsKeyPressed(Keyboard.Key.Escape))
+            if (Keyboard.IsKeyPressed(Keyboard.Key.Escape) || Keyboard.IsKeyPressed(Keyboard.Key.Return) || Keyboard.IsKeyPressed(Keyboard.Key.Space))
             {
                 ChangeGameState(State.Menu, 1.0f);
             }

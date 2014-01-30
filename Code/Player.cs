@@ -59,10 +59,12 @@ namespace JamTemplate
             NumberOfShots = 0;
 
             Velocity = new Vector2f(0.0f, 0.0f);
-            Position = new Vector2f(0.0f, 500.0f);
+            Position = new Vector2f(375.0f, 500.0f);
 
             Points = 0;
             _scoreMultiplier = 1.0f;
+
+            //_godModeTimer = GameProperties.PlayerGodModeTime;
 
 			SetupActionMap();
 
