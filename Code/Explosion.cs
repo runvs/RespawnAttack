@@ -59,7 +59,7 @@ namespace JamTemplate
             {
                 for (uint i = 0; i != ParticleManager.NumberOfSmokeCloudParticles*9; i++)
                 {
-                    Vector2f puffPosition = Position + RandomGenerator.GetRandomVector2fSquare(_explostionTotalRange * 2.5f);
+                    Vector2f puffPosition = Position + RandomGenerator.GetRandomVector2fInCircle(_explostionTotalRange * 2.5f);
                     Vector2f puffvelocity = -1.5f * (Position - puffPosition);
                     ParticleManager.SpawnSmokePuff(puffPosition, puffvelocity, GameProperties.Color8, 7, 3.5f);
                 }

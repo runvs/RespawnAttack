@@ -20,10 +20,11 @@ namespace JamTemplate
         System.Collections.Generic.List<float> _starLayerAlphaFrequency;
 
 
-        System.Collections.Generic.List<Vector2f> _cloudLayerPositions;
-        System.Collections.Generic.List<Vector2f> _cloudLayerScale;
+        //System.Collections.Generic.List<Vector2f> _cloudLayerPositions;
+        //System.Collections.Generic.List<Vector2f> _cloudLayerScale;
         System.Collections.Generic.List<Vector2f> _cloudLayerIndividualMovementFrequencies;
-        CircleShape _cloudShape;
+        //CircleShape _cloudShape;
+        System.Collections.Generic.List<JamUtilities.AreatricCloud> _cloudList;
         Color _cloudColor;
         Vector2f _cloudMovementVector;
 
@@ -72,19 +73,17 @@ namespace JamTemplate
                 _starLayerAlphaFrequency.Add(alphaFrequency);
             }
 
-            _cloudLayerPositions = new List<Vector2f>();
-            _cloudLayerScale = new List<Vector2f>();
             _cloudLayerIndividualMovementFrequencies = new List<Vector2f>();
+
+            _cloudColor = GameProperties.Color8;
+            _cloudColor.A = 20;
+            _cloudList = new List<AreatricCloud>();
             for (int i = 0; i <= GameProperties.BackgroundNumberOfClouds; i++)
             {
-                _cloudLayerPositions.Add(RandomGenerator.GetRandomVector2f(new Vector2f(-50, 750.0f), new Vector2f(0,600)));
-                _cloudLayerScale.Add(RandomGenerator.GetRandomVector2f(new Vector2f(0.80f, 1.2f), new Vector2f(0.25f, 0.45f)));
-
+                _cloudList.Add(new AreatricCloud(RandomGenerator.GetRandomVector2f(new Vector2f(-50, 750.0f), new Vector2f(0, 600)), _cloudColor, 8, 50));
                 _cloudLayerIndividualMovementFrequencies.Add(new Vector2f((float)((RandomGenerator.Random.NextDouble() + 0.5f) * GameProperties.BackgroundCloudBaseFrequency), (float)((RandomGenerator.Random.NextDouble() + 0.5f) * GameProperties.BackgroundCloudBaseFrequency)));
             }
-            _cloudColor = GameProperties.Color8;
-            _cloudColor.A = 125;
-            
+
         }
 
         public void Update (float deltaT)
@@ -97,22 +96,25 @@ namespace JamTemplate
 
         private void DoCloudMovement(float deltaT)
         {
-            for (int i = 0; i != _cloudLayerPositions.Count; i++ )
+            //for (int i = 0; i != _cloudLayerPositions.Count; i++ )
+            int i = 0;
+            foreach(var c in _cloudList)
             {
                 Vector2f IndividualVelocity = new Vector2f(1.5f * (float)Math.Sin(_totalTimePassed * _cloudLayerIndividualMovementFrequencies[i].X), 2.5f * (float)Math.Sin(_totalTimePassed * _cloudLayerIndividualMovementFrequencies[i].Y));
-                _cloudLayerPositions[i] += deltaT * (_cloudMovementVector + IndividualVelocity) * GameProperties.BackgroundCloudMovementSpeed;
-                if (_cloudLayerPositions[i].X >= 810)
+                c.Position += deltaT * (_cloudMovementVector + IndividualVelocity) * GameProperties.BackgroundCloudMovementSpeed;
+                if (c.Position.X >= 810)
                 {
-                    _cloudLayerPositions[i] = new Vector2f(- 2.0f* GameProperties.BackgroundCloudRadius, _cloudLayerPositions[i].Y);
+                    c.Position = new Vector2f(-2.0f * GameProperties.BackgroundCloudRadius, c.Position.Y);
                 }
-                if (_cloudLayerPositions[i].Y >= 1000)
+                if (c.Position.Y >= 1000)
                 {
-                    _cloudLayerPositions[i] = new Vector2f(_cloudLayerPositions[i].X, -350);
+                    c.Position = new Vector2f(c.Position.X, -350);
                 }
-                if (_cloudLayerPositions[i].Y <= -400)
+                if (c.Position.Y <= -400)
                 {
-                    _cloudLayerPositions[i] = new Vector2f(_cloudLayerPositions[i].X, 900);
+                    c.Position = new Vector2f(c.Position.X, 900);
                 }
+                i++;
             }
         }
 
@@ -120,8 +122,7 @@ namespace JamTemplate
         {
             rw.Clear(GameProperties.Color9);
 
-            ScreenEffects.DrawFadeUp(rw);
-            ScreenEffects.DrawFadeRadial(rw);
+
 
             int i = 0;
             foreach (var v in _starLayerPositions)
@@ -144,18 +145,22 @@ namespace JamTemplate
                 spr.Draw(rw);
                 i++;
             }
-
+            ScreenEffects.DrawFadeUp(rw);
             i = 0;
-            foreach (var v in _cloudLayerPositions)
+            foreach (var c in _cloudList)
             {
-                _cloudShape = new CircleShape(GameProperties.BackgroundCloudRadius);
-                _cloudShape.FillColor = _cloudColor;
-                _cloudShape.Position = v + ScreenEffects.GlobalSpriteOffset *0.75f;
-                _cloudShape.Scale = _cloudLayerScale[i];
+                //_cloudShape = new CircleShape(GameProperties.BackgroundCloudRadius);
+                //_cloudShape.FillColor = _cloudColor;
+                //_cloudShape.Position = v + ScreenEffects.GlobalSpriteOffset *0.75f;
+                //_cloudShape.Scale = _cloudLayerScale[i];
 
-                rw.Draw(_cloudShape);
-                i++;
+                //rw.Draw(_cloudShape);
+                //i++;
+                c.Draw(rw);
             }
+
+            
+            ScreenEffects.DrawFadeRadial(rw);
 
         }
 

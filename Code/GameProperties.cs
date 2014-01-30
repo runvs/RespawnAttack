@@ -62,7 +62,7 @@ namespace JamTemplate
 
         public static float BackgroundAlphaBaseFrequency { get { return 5.0f; } }
 
-        public static int BackgroundNumberOfClouds { get { return 10; } }
+        public static int BackgroundNumberOfClouds { get { return 12; } }
 
         public static float BackgroundCloudRadius { get { return 50.0f; } }
 
