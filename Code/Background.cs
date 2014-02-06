@@ -160,7 +160,7 @@ namespace JamTemplate
             }
 
             
-            ScreenEffects.DrawFadeRadial(rw);
+            
 
         }
 

@@ -57,13 +57,22 @@ namespace JamTemplate
         {
             if (CanHitPlayer)
             {
-                for (uint i = 0; i != ParticleManager.NumberOfSmokeCloudParticles*9; i++)
+                for (uint i = 0; i != ParticleManager.NumberOfSmokeCloudParticles * 9; i++)
                 {
                     Vector2f puffPosition = Position + RandomGenerator.GetRandomVector2fInCircle(_explostionTotalRange * 2.5f);
                     Vector2f puffvelocity = -1.5f * (Position - puffPosition);
                     ParticleManager.SpawnSmokePuff(puffPosition, puffvelocity, GameProperties.Color8, 7, 3.5f);
+
                 }
+                ParticleManager.SpawnMultipleDebris(Position, 1050, GameProperties.Color1, 5);
             }
+            else
+            {
+                ParticleManager.SpawnMultipleDebris(Position, 140, GameProperties.Color1, 2);
+            }
+
+            
+            
             
         }
 

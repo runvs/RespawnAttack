@@ -215,15 +215,14 @@ namespace JamTemplate
 			_player.Draw(rw);
 
 			ParticleManager.Draw(rw);
-
+            ScreenEffects.DrawScreenLining(rw);
 			foreach (var e in _explosionList)
 			{
 				e.Draw(rw);
 			}
 			ScreenEffects.Draw(rw);
-
-			_player.DrawScore(rw);
-
+            ScreenEffects.DrawFadeRadial(rw);
+            _player.DrawScore(rw); 
 		}
 
 		private void InitGame()

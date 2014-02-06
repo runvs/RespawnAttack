@@ -33,6 +33,7 @@ namespace JamTemplate
             SmartText._lineSpread = 1.2f;
             //ScreenEffects._fadeColor = GameProperties.Color1;
             ScreenEffects.Init(new Vector2u(800,600));
+            ParticleManager.SetPositionRect(new FloatRect(0, 0, 800, 600));
 
             Texture glowTexture;
             uint glowsize = 30;
