@@ -19,18 +19,19 @@ namespace JamTemplate
         System.Collections.Generic.List<uint> _starLayerType;
         System.Collections.Generic.List<float> _starLayerAlphaFrequency;
 
-
-        //System.Collections.Generic.List<Vector2f> _cloudLayerPositions;
-        //System.Collections.Generic.List<Vector2f> _cloudLayerScale;
         System.Collections.Generic.List<Vector2f> _cloudLayerIndividualMovementFrequencies;
-        //CircleShape _cloudShape;
         System.Collections.Generic.List<JamUtilities.AreatricCloud> _cloudList;
         Color _cloudColor;
         Vector2f _cloudMovementVector;
 
+        Texture _backgroundDarkenTexture;
+        Sprite _backgroundDarkenSprite;
+
 
 
         float _totalTimePassed;
+        private float _darkentimer = 0.0f;
+        private float _darksteptime = 0.0025f;
 
         public Background()
         {
@@ -84,6 +85,12 @@ namespace JamTemplate
                 _cloudLayerIndividualMovementFrequencies.Add(new Vector2f((float)((RandomGenerator.Random.NextDouble() + 0.5f) * GameProperties.BackgroundCloudBaseFrequency), (float)((RandomGenerator.Random.NextDouble() + 0.5f) * GameProperties.BackgroundCloudBaseFrequency)));
             }
 
+
+
+            Image backgroundDarkenImage = new Image(800,600, Color.Black);
+            _backgroundDarkenTexture = new Texture(backgroundDarkenImage);
+            _backgroundDarkenSprite = new Sprite(_backgroundDarkenTexture);
+            _backgroundDarkenSprite.Color = new Color(0, 0, 0, 0);
         }
 
         public void Update (float deltaT)
@@ -91,6 +98,28 @@ namespace JamTemplate
             _totalTimePassed += deltaT;
 
             DoCloudMovement(deltaT);
+
+            if (_backgroundDarkenSprite.Color.A > 0)
+            {
+                _darkentimer -= deltaT;
+                if (_darkentimer <= 0.0f)
+                {
+                    _darkentimer = _darksteptime;
+                    Color oldcol = _backgroundDarkenSprite.Color;
+                    oldcol.A--;
+                    oldcol.A--;
+                    oldcol.A--;
+                    oldcol.A--;
+                    if (oldcol.A < 0)
+                    {
+                        oldcol.A = 0;
+                    }
+                    _backgroundDarkenSprite.Color = oldcol;
+                   // Console.WriteLine(oldcol.A);
+                }
+
+            }
+
 
         }
 
@@ -159,12 +188,21 @@ namespace JamTemplate
                 c.Draw(rw);
             }
 
-            
+            rw.Draw(_backgroundDarkenSprite);
             
 
         }
 
 
 
+
+        internal void Darken(byte thickness)
+        {
+            //Console.WriteLine("Darken");
+            Color oldCol = _backgroundDarkenSprite.Color;
+            oldCol.A = thickness;
+            _backgroundDarkenSprite.Color = oldCol;
+            _darkentimer = _darksteptime;
+        }
     }
 }

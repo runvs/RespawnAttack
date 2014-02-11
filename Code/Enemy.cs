@@ -14,6 +14,7 @@ namespace JamTemplate
 		private World _world;
 		public Vector2f Position { get; private set; }
 		public Vector2f Velocity { get; private set; }
+        static public Background _background;
 
 		private SmartSprite _sprite;
 		private float _dyingTimer;
@@ -207,7 +208,7 @@ namespace JamTemplate
 			if (!IsDying && !IsDead)
 			{
 				_sprite.Flash(GameProperties.Color9, 0.2f);
-				_sprite.Shake(0.2f, 0.015f, 2.5f);
+				_sprite.Shake(0.2f, 0.015f, 3.5f);
 
 				Health -= GameProperties.PlayerDamage;
 
@@ -228,6 +229,10 @@ namespace JamTemplate
 			{
 				if (Health <= 0)
 				{
+                    if (_background != null)
+                    {
+                        _background.Darken(68);
+                    }
                     _explosionSound.Play();
 					ScreenEffects.ShakeScreen (0.75f, 0.01f, 4);
 					IsDying = true;
